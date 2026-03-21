@@ -202,22 +202,24 @@ function DashboardTab() {
             <span className="admin-card-title">Recent Web Orders</span>
             <button className="admin-card-action" aria-label="View All Orders">View All <ArrowUpRight size={13} /></button>
           </div>
-          <table className="admin-table">
-            <thead>
-              <tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              {RECENT_ORDERS.slice(0, 4).map(order => (
-                <tr key={order.id}>
-                  <td><code className="admin-code-blue">{order.id}</code></td>
-                  <td className="admin-fw-600">{order.customer}</td>
-                  <td className="admin-text-muted-sm admin-truncate-160">{order.product}</td>
-                  <td className="admin-fw-700">{order.amount}</td>
-                  <td><StatusBadge status={order.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                {RECENT_ORDERS.slice(0, 4).map(order => (
+                  <tr key={order.id}>
+                    <td><code className="admin-code-blue">{order.id}</code></td>
+                    <td className="admin-fw-600">{order.customer}</td>
+                    <td className="admin-text-muted-sm admin-truncate-160">{order.product}</td>
+                    <td className="admin-fw-700">{order.amount}</td>
+                    <td><StatusBadge status={order.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="admin-card">
@@ -253,36 +255,38 @@ function ProductsTab() {
           <span className="admin-card-title">All Products ({PRODUCTS_LIST.length})</span>
           <button className="admin-card-action"><Filter size={13} /> Filter</button>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th><th>Product Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {PRODUCTS_LIST.map(p => (
-              <tr key={p.id}>
-                <td><code className="admin-code-gray">{p.id}</code></td>
-                <td className="admin-fw-600">{p.name}</td>
-                <td className="admin-text-muted-sm">{p.category}</td>
-                <td className="admin-fw-700">{p.price}</td>
-                <td>
-                  <span className={`admin-fw-700 ${p.stock === 0 ? 'admin-action-btn-red' : p.stock < 20 ? 'admin-stat-change orange' : 'admin-stat-change up'}`} style={{ color: p.stock === 0 ? '#ef4444' : p.stock < 20 ? '#f97316' : '#10b981' }}>
-                    {p.stock === 0 ? 'Out of Stock' : `${p.stock} units`}
-                  </span>
-                </td>
-                <td><StatusBadge status={p.status} /></td>
-                <td>
-                  <div className="admin-action-btn-group">
-                    <button className="admin-action-btn blue" title="View"><Eye size={13} /></button>
-                    <button className="admin-action-btn green" title="Edit"><Pencil size={13} /></button>
-                    <button className="admin-action-btn red" title="Delete"><Trash2 size={13} /></button>
-                  </div>
-                </td>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Product Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {PRODUCTS_LIST.map(p => (
+                <tr key={p.id}>
+                  <td><code className="admin-code-gray">{p.id}</code></td>
+                  <td className="admin-fw-600">{p.name}</td>
+                  <td className="admin-text-muted-sm">{p.category}</td>
+                  <td className="admin-fw-700">{p.price}</td>
+                  <td>
+                    <span className={`admin-fw-700 ${p.stock === 0 ? 'admin-action-btn-red' : p.stock < 20 ? 'admin-stat-change orange' : 'admin-stat-change up'}`} style={{ color: p.stock === 0 ? '#ef4444' : p.stock < 20 ? '#f97316' : '#10b981' }}>
+                      {p.stock === 0 ? 'Out of Stock' : `${p.stock} units`}
+                    </span>
+                  </td>
+                  <td><StatusBadge status={p.status} /></td>
+                  <td>
+                    <div className="admin-action-btn-group">
+                      <button className="admin-action-btn blue" title="View"><Eye size={13} /></button>
+                      <button className="admin-action-btn green" title="Edit"><Pencil size={13} /></button>
+                      <button className="admin-action-btn red" title="Delete"><Trash2 size={13} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -313,26 +317,28 @@ function OrdersTab() {
           <span className="admin-card-title">All Orders</span>
           <button className="admin-card-action"><Download size={13} /> Export</button>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RECENT_ORDERS.map(o => (
-              <tr key={o.id}>
-                <td><code className="admin-code-blue">{o.id}</code></td>
-                <td className="admin-fw-600">{o.customer}</td>
-                <td className="admin-text-muted-sm">{o.product}</td>
-                <td className="admin-fw-700">{o.amount}</td>
-                <td className="admin-text-muted-sm">{o.date}</td>
-                <td><StatusBadge status={o.status} /></td>
-                <td><button className="admin-card-action admin-text-muted-xs">View <ChevronRight size={12} /></button></td>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {RECENT_ORDERS.map(o => (
+                <tr key={o.id}>
+                  <td><code className="admin-code-blue">{o.id}</code></td>
+                  <td className="admin-fw-600">{o.customer}</td>
+                  <td className="admin-text-muted-sm">{o.product}</td>
+                  <td className="admin-fw-700">{o.amount}</td>
+                  <td className="admin-text-muted-sm">{o.date}</td>
+                  <td><StatusBadge status={o.status} /></td>
+                  <td><button className="admin-card-action admin-text-muted-xs">View <ChevronRight size={12} /></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -349,32 +355,34 @@ function CustomersTab() {
         <div className="admin-card-header">
           <span className="admin-card-title">All Customers ({CUSTOMERS.length})</span>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {CUSTOMERS.map((c, i) => (
-              <tr key={i}>
-                <td>
-                  <div className="admin-sidebar-user">
-                    <div className="admin-avatar admin-avatar-sm">
-                      {c.name.charAt(0)}
-                    </div>
-                    <span className="admin-fw-600">{c.name}</span>
-                  </div>
-                </td>
-                <td className="admin-text-muted-sm">{c.email}</td>
-                <td className="admin-fw-700">{c.orders}</td>
-                <td className="admin-fw-700">{c.total}</td>
-                <td className="admin-text-muted-xs">{c.joined}</td>
-                <td><StatusBadge status={c.status} /></td>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {CUSTOMERS.map((c, i) => (
+                <tr key={i}>
+                  <td>
+                    <div className="admin-sidebar-user">
+                      <div className="admin-avatar admin-avatar-sm">
+                        {c.name.charAt(0)}
+                      </div>
+                      <span className="admin-fw-600">{c.name}</span>
+                    </div>
+                  </td>
+                  <td className="admin-text-muted-sm">{c.email}</td>
+                  <td className="admin-fw-700">{c.orders}</td>
+                  <td className="admin-fw-700">{c.total}</td>
+                  <td className="admin-text-muted-xs">{c.joined}</td>
+                  <td><StatusBadge status={c.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -494,20 +502,22 @@ function InventoryTab() {
             <span className="admin-card-title">Bulk Stock Update</span>
             <button className="admin-quick-btn blue" style={{ width: 'auto', padding: '4px 12px' }}>Save All</button>
           </div>
-          <table className="admin-table">
-            <thead>
-              <tr><th>Product</th><th>Current</th><th>Add Qty</th></tr>
-            </thead>
-            <tbody>
-              {PRODUCTS_LIST.slice(0, 5).map(p => (
-                <tr key={p.id}>
-                  <td>{p.name}</td>
-                  <td className="admin-fw-700">{p.stock}</td>
-                  <td><input type="number" placeholder="0" className="admin-settings-value" style={{ width: 60, padding: '2px 8px' }} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr><th>Product</th><th>Current</th><th>Add Qty</th></tr>
+              </thead>
+              <tbody>
+                {PRODUCTS_LIST.slice(0, 5).map(p => (
+                  <tr key={p.id}>
+                    <td>{p.name}</td>
+                    <td className="admin-fw-700">{p.stock}</td>
+                    <td><input type="number" placeholder="0" className="admin-settings-value" style={{ width: 60, padding: '2px 8px' }} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="admin-card">
@@ -554,40 +564,42 @@ function WhatsAppMgmtTab() {
             <button className="admin-card-action">Replied</button>
           </div>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Customer</th><th>Enquiry Message</th><th>Date / Time</th><th>Status</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {WHATSAPP_ENQUIRIES.map(w => (
-              <tr key={w.id}>
-                <td>
-                  <div className="admin-fw-600">{w.name}</div>
-                  <div className="admin-text-muted-xs">{w.phone}</div>
-                </td>
-                <td className="admin-text-muted-sm admin-truncate-160" title={w.message}>&quot;{w.message}&quot;</td>
-                <td className="admin-text-muted-sm">{w.date}</td>
-                <td>
-                  <span className={`admin-status ${w.status}`}>
-                    {w.status === 'new' && <Clock size={10} style={{ marginRight: 4 }} />}
-                    {w.status === 'replied' && <MessageCircle size={10} style={{ marginRight: 4 }} />}
-                    {w.status === 'confirmed' && <CheckCircle2 size={10} style={{ marginRight: 4 }} />}
-                    {w.status.toUpperCase()}
-                  </span>
-                </td>
-                <td>
-                  <div className="admin-action-btn-group">
-                    <button className="admin-action-btn green" title="WhatsApp Reply"><MessageCircle size={13} /></button>
-                    <button className="admin-action-btn blue" title="Call"><Phone size={13} /></button>
-                    <button className="admin-action-btn purple" title="Update Status"><Pencil size={13} /></button>
-                  </div>
-                </td>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Customer</th><th>Enquiry Message</th><th>Date / Time</th><th>Status</th><th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {WHATSAPP_ENQUIRIES.map(w => (
+                <tr key={w.id}>
+                  <td>
+                    <div className="admin-fw-600">{w.name}</div>
+                    <div className="admin-text-muted-xs">{w.phone}</div>
+                  </td>
+                  <td className="admin-text-muted-sm admin-truncate-160" title={w.message}>&quot;{w.message}&quot;</td>
+                  <td className="admin-text-muted-sm">{w.date}</td>
+                  <td>
+                    <span className={`admin-status ${w.status}`}>
+                      {w.status === 'new' && <Clock size={10} style={{ marginRight: 4 }} />}
+                      {w.status === 'replied' && <MessageCircle size={10} style={{ marginRight: 4 }} />}
+                      {w.status === 'confirmed' && <CheckCircle2 size={10} style={{ marginRight: 4 }} />}
+                      {w.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="admin-action-btn-group">
+                      <button className="admin-action-btn green" title="WhatsApp Reply"><MessageCircle size={13} /></button>
+                      <button className="admin-action-btn blue" title="Call"><Phone size={13} /></button>
+                      <button className="admin-action-btn purple" title="Update Status"><Pencil size={13} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="admin-card">
@@ -643,43 +655,45 @@ function GroupOrdersTab() {
           <span className="admin-card-title">Active Group Orders</span>
           <button className="admin-quick-btn blue" title="New Bulk Order"><Plus size={16} /> New Bulk Order</button>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Event / Group</th><th>Quantity</th><th>Color</th><th>Deadline</th><th>Revenue</th><th>Status</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {GROUP_ORDERS.map(g => (
-              <tr key={g.id}>
-                <td>
-                  <div className="admin-fw-600">{g.event}</div>
-                  <div className="admin-code-gray">{g.id}</div>
-                </td>
-                <td className="admin-fw-700">{g.count} pcs</td>
-                <td>
-                  <div className="admin-flex-gap-2">
-                    <div className="admin-dot" style={{ backgroundColor: g.color.toLowerCase().includes('blue') ? 'blue' : g.color.toLowerCase().includes('white') ? '#eee' : '#f59e0b' }} />
-                    {g.color}
-                  </div>
-                </td>
-                <td className="admin-text-muted-sm">{g.date}</td>
-                <td className="admin-fw-700">{g.revenue}</td>
-                <td>
-                  <span className={`admin-status ${g.status}`}>
-                    {g.status.replace('_', ' ').toUpperCase()}
-                  </span>
-                </td>
-                <td>
-                  <div className="admin-action-btn-group">
-                    <button className="admin-action-btn blue" title="View Details"><ExternalLink size={13} /></button>
-                    <button className="admin-action-btn purple" title="Export Sizes"><FileText size={13} /></button>
-                  </div>
-                </td>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Event / Group</th><th>Quantity</th><th>Color</th><th>Deadline</th><th>Revenue</th><th>Status</th><th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {GROUP_ORDERS.map(g => (
+                <tr key={g.id}>
+                  <td>
+                    <div className="admin-fw-600">{g.event}</div>
+                    <div className="admin-code-gray">{g.id}</div>
+                  </td>
+                  <td className="admin-fw-700">{g.count} pcs</td>
+                  <td>
+                    <div className="admin-flex-gap-2">
+                      <div className="admin-dot" style={{ backgroundColor: g.color.toLowerCase().includes('blue') ? 'blue' : g.color.toLowerCase().includes('white') ? '#eee' : '#f59e0b' }} />
+                      {g.color}
+                    </div>
+                  </td>
+                  <td className="admin-text-muted-sm">{g.date}</td>
+                  <td className="admin-fw-700">{g.revenue}</td>
+                  <td>
+                    <span className={`admin-status ${g.status}`}>
+                      {g.status.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="admin-action-btn-group">
+                      <button className="admin-action-btn blue" title="View Details"><ExternalLink size={13} /></button>
+                      <button className="admin-action-btn purple" title="Export Sizes"><FileText size={13} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -697,29 +711,31 @@ function CouponsTab() {
           <span className="admin-card-title">Active Coupons</span>
           <button className="admin-quick-btn blue"><Plus size={16} /> Create Coupon</button>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr><th>Code</th><th>Type</th><th>Value</th><th>Usage</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            {COUPONS.map(c => (
-              <tr key={c.code}>
-                <td><code className="admin-fw-800" style={{ color: '#7c3aed' }}>{c.code}</code></td>
-                <td>{c.type}</td>
-                <td className="admin-fw-700">{c.value}</td>
-                <td>{c.used} times</td>
-                <td className="admin-text-muted-sm">{c.expiry}</td>
-                <td><StatusBadge status={c.status} /></td>
-                <td>
-                  <div className="admin-action-btn-group">
-                    <button className="admin-action-btn blue"><Pencil size={13} /></button>
-                    <button className="admin-action-btn red"><Trash2 size={13} /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr><th>Code</th><th>Type</th><th>Value</th><th>Usage</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {COUPONS.map(c => (
+                <tr key={c.code}>
+                  <td><code className="admin-fw-800" style={{ color: '#7c3aed' }}>{c.code}</code></td>
+                  <td>{c.type}</td>
+                  <td className="admin-fw-700">{c.value}</td>
+                  <td>{c.used} times</td>
+                  <td className="admin-text-muted-sm">{c.expiry}</td>
+                  <td><StatusBadge status={c.status} /></td>
+                  <td>
+                    <div className="admin-action-btn-group">
+                      <button className="admin-action-btn blue"><Pencil size={13} /></button>
+                      <button className="admin-action-btn red"><Trash2 size={13} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
@@ -764,27 +780,29 @@ function StaffTab() {
           <span className="admin-card-title">Shop Staff</span>
           <button className="admin-quick-btn blue"><Plus size={16} /> Add Staff</button>
         </div>
-        <table className="admin-table">
-          <thead>
-            <tr><th>Name</th><th>Role</th><th>Access</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            {STAFF.map(s => (
-              <tr key={s.name}>
-                <td className="admin-fw-600">{s.name}</td>
-                <td><span className="admin-text-muted-xs admin-fw-700" style={{ background: '#f5f5f5', padding: '2px 8px', borderRadius: 4 }}>{s.role.toUpperCase()}</span></td>
-                <td className="admin-text-muted-sm">{s.access}</td>
-                <td><StatusBadge status={s.status} /></td>
-                <td>
-                  <div className="admin-action-btn-group">
-                    <button className="admin-action-btn blue"><Pencil size={13} /></button>
-                    <button className="admin-action-btn red"><Shield size={13} /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr><th>Name</th><th>Role</th><th>Access</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {STAFF.map(s => (
+                <tr key={s.name}>
+                  <td className="admin-fw-600">{s.name}</td>
+                  <td><span className="admin-text-muted-xs admin-fw-700" style={{ background: '#f5f5f5', padding: '2px 8px', borderRadius: 4 }}>{s.role.toUpperCase()}</span></td>
+                  <td className="admin-text-muted-sm">{s.access}</td>
+                  <td><StatusBadge status={s.status} /></td>
+                  <td>
+                    <div className="admin-action-btn-group">
+                      <button className="admin-action-btn blue"><Pencil size={13} /></button>
+                      <button className="admin-action-btn red"><Shield size={13} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

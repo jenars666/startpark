@@ -63,15 +63,34 @@ interface AdminLayoutProps {
 export function AdminLayout({ activeTab, setActiveTab, title, children }: AdminLayoutProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     router.push('/login');
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleLinkClick = (id: string) => {
+    setActiveTab(id);
+    closeMobileMenu();
+  };
+
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div className="admin-mobile-overlay" onClick={closeMobileMenu} />
+      )}
+
       {/* Sidebar */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="admin-sidebar-logo">
           <div className="admin-logo-text">Star</div>
           <div className="admin-logo-sub">Mens Park</div>
@@ -86,7 +105,7 @@ export function AdminLayout({ activeTab, setActiveTab, title, children }: AdminL
                 <button
                   key={link.id}
                   className={`admin-nav-link ${activeTab === link.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(link.id)}
+                  onClick={() => handleLinkClick(link.id)}
                 >
                   <link.icon size={17} />
                   {link.label}
@@ -115,9 +134,19 @@ export function AdminLayout({ activeTab, setActiveTab, title, children }: AdminL
       <div className="admin-main">
         {/* Topbar */}
         <header className="admin-topbar">
-          <span className="admin-topbar-title">{title}</span>
+          <div className="admin-topbar-left">
+            <button className="admin-menu-toggle" onClick={toggleMobileMenu} aria-label="Toggle Menu">
+              <div className="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
+            <span className="admin-topbar-title">{title}</span>
+          </div>
+
           <div className="admin-topbar-right">
-            <div className="admin-topbar-search">
+            <div className="admin-topbar-search desktop-only">
               <Search size={14} color="#888" />
               <input
                 type="text"
