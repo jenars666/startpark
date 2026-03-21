@@ -9,7 +9,7 @@ const circleCategories = [
   { name: 'Group Shirts', img: 'images/group2.png' },
   { name: 'Vesti &Shirt', img: '/images/groupshirt.png' },
   { name: 'Bottoms', img: '/images/bottoms.png' },
-  { name: 'Casual', img: 'images/casual2.png' },
+  { name: 'Casual', img: '/images/casual2.png' },
   { name: 'Designer shirts', img: 'images/desigher.png' },
   { name: 'Formal', img: 'images/formal.png' },
 ];

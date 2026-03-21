@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Search, Heart, ShoppingCart, User, Instagram, Facebook, Youtube, Chrome } from 'lucide-react';
 import './Header.css';
 
@@ -35,7 +36,7 @@ export default function Header() {
           </div>
 
           <div className="header-actions">
-            <button className="login-btn">LOGIN</button>
+            <Link href="/login" className="login-btn">LOGIN</Link>
             <div className="action-icons">
               <button className="icon-btn">
                 <Heart size={22} className="header-icon" />

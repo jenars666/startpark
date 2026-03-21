@@ -35,7 +35,6 @@ export default function StyleUpgrade() {
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="style-img-col"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&q=80')" }}
           />
           
         </div>

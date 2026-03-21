@@ -67,8 +67,9 @@
 }
 
 .style-img-col {
+  background-image: url('/images/downstyle.png');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   min-height: 600px;
 }
 
