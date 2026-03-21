@@ -1,0 +1,122 @@
+.promo-banners-section {
+  background-color: #ffffff;
+  padding: 4rem 0 6rem 0;
+}
+
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.promo-card {
+  position: relative;
+  height: 480px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.promo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Card 1: Solid Color */
+.promo-card-solid {
+  background-color: #f7f7f7;
+}
+
+/* Card 2: Image background matching the user reference */
+.promo-card-image {
+  background-color: #e5e5e5;
+  background-image: url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1000&q=80');
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+/* Gradual overlay so the text aligns neatly on the left with good contrast, fading into the image on the right */
+.promo-card-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(240, 240, 240, 0.95) 0%, rgba(240, 240, 240, 0.6) 50%, rgba(240, 240, 240, 0.1) 100%);
+  z-index: 1;
+}
+
+.promo-content {
+  position: relative;
+  z-index: 2;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 60%;
+}
+
+.promo-subhead {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #555555;
+  margin-bottom: 1.5rem;
+}
+
+.promo-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.2rem, 3.5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #111111;
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+.promo-link {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #111111;
+  text-decoration: none;
+  border-bottom: 2px solid #111111;
+  padding-bottom: 4px;
+  transition: opacity 0.2s, padding-bottom 0.2s;
+}
+
+.promo-link:hover {
+  opacity: 0.6;
+  padding-bottom: 6px;
+}
+
+@media (max-width: 1024px) {
+  .promo-content {
+    padding: 2rem 3rem;
+    max-width: 70%;
+  }
+}
+
+@media (max-width: 768px) {
+  .promo-grid {
+    grid-template-columns: 1fr;
+  }
+  .promo-card {
+    height: 350px;
+  }
+  .promo-content {
+    max-width: 80%;
+  }
+}
+
+@media (max-width: 480px) {
+  .promo-content {
+    padding: 2rem;
+    max-width: 100%;
+  }
+}

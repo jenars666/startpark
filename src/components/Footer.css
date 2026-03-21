@@ -1,0 +1,166 @@
+.site-footer {
+  background-color: #ffffff;
+  color: #555555;
+  border-top: 1px solid #f0f0f0;
+  font-family: var(--font-sans);
+  padding-top: 5rem;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1.2fr;
+  gap: 3rem;
+  padding-bottom: 4rem;
+}
+
+.footer-logo {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 3.5rem;
+  color: #111111;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.footer-desc {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: #777777;
+  margin-bottom: 1.5rem;
+}
+
+.footer-desc strong {
+  color: #333333;
+  font-weight: 600;
+}
+
+.footer-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111111;
+  margin-bottom: 2rem;
+  margin-top: 10px;
+}
+
+.links-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.links-col a {
+  color: #777777;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.links-col a:hover {
+  color: #111111;
+}
+
+.support-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.support-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #777777;
+  line-height: 1.6;
+}
+
+.support-icon {
+  margin-top: 3px; /* align icon with text */
+  flex-shrink: 0;
+}
+
+/* Footer Bottom Layout */
+.footer-bottom {
+  border-top: 1px solid #f0f0f0;
+  padding: 2rem 0;
+}
+
+.bottom-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.social-circles {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-circles a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #f7f7f7;
+  color: #111111;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.social-circles a:hover {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.copyright {
+  font-size: 0.85rem;
+  color: #888888;
+}
+
+.payment-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Hardcoded badges matching payment options for now */
+.pay-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.pay-badge.upi { background: #f0f0f0; color: #111; }
+.pay-badge.paytm { background: #00baf2; color: #fff; }
+.pay-badge.gpay { background: #ea4335; color: #fff; }
+.pay-badge.phonepe { background: #5f259f; color: #fff; }
+
+@media (max-width: 1024px) {
+  .footer-top {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bottom-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .mt-responsive {
+    margin-top: 2rem;
+  }
+}

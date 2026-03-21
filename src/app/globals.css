@@ -1,17 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Outfit:wght@400;600;700;900&family=Oswald:wght@500;700&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-color: #050505;
+  --text-color: #ffffff;
+  --text-muted: #888888;
+  --border-color: #333333;
+  --accent-green: #76b900;
+  --accent-yellow: #f2d300;
+  
+  --font-sans: 'Outfit', sans-serif;
+  --font-display: 'Oswald', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html,
@@ -21,20 +25,11 @@ body {
 }
 
 body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-color);
+  background: var(--bg-color);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 a {
@@ -42,8 +37,125 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1;
+  font-weight: 900;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-green {
+  color: var(--accent-green);
+}
+
+.text-yellow {
+  color: var(--accent-yellow);
+}
+
+/* Neo-Brutalism Utilities */
+.neo-border {
+  border: 3px solid var(--text-color);
+}
+
+.neo-border-green {
+  border: 3px solid var(--accent-green);
+}
+
+.neo-border-yellow {
+  border: 3px solid var(--accent-yellow);
+}
+
+.neo-shadow {
+  box-shadow: 6px 6px 0px 0px var(--border-color);
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.neo-shadow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px 0px var(--text-color);
+}
+
+/* Button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--text-color);
+  color: var(--bg-color);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--text-color);
+}
+
+.btn-green {
+  background: var(--accent-green);
+  color: var(--bg-color);
+  border-color: var(--accent-green);
+}
+
+.btn-green:hover {
+  box-shadow: 6px 6px 0px 0px var(--accent-green);
+}
+
+.btn-yellow {
+  background: var(--accent-yellow);
+  color: var(--bg-color);
+  border-color: var(--accent-yellow);
+}
+
+.btn-yellow:hover {
+  box-shadow: 6px 6px 0px 0px var(--accent-yellow);
+}
+
+/* Layout Utilities */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Hide scrollbar for bento elements */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

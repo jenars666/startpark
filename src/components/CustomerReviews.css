@@ -1,0 +1,111 @@
+.customer-reviews-section {
+  background-color: #ffffff;
+  padding: 6rem 0;
+}
+
+.reviews-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 4rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Horizontal Scrolling Row */
+.reviews-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 3rem;
+  padding-bottom: 2rem;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.reviews-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Review Card styling matching reference */
+.review-card {
+  min-width: calc(33.333% - 2rem);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 1rem;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 2rem;
+}
+
+.review-text {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #555555;
+  margin-bottom: 2.5rem;
+  flex-grow: 1; /* allows author block to push to bottom if heights vary */
+}
+
+.review-author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.author-name {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111111;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.author-location {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #888888;
+}
+
+/* Simple Dots at bottom */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: #888888;
+}
+
+@media (max-width: 1024px) {
+  .review-card {
+    min-width: calc(50% - 1.5rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .review-card {
+    min-width: 100%;
+  }
+}

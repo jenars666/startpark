@@ -1,0 +1,146 @@
+.hero-section {
+  position: relative;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* Collage Background */
+.hero-collage {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-rows: 250px;
+  gap: 0;
+  z-index: 0;
+  opacity: 0.5; /* Darken for text readability */
+}
+
+/* Placeholder images for the collage to simulate the reference design */
+.collage-item {
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%) contrast(1.2); /* Keep B&W theme */
+  transition: filter 0.3s;
+}
+
+.collage-item:hover {
+  filter: grayscale(0%) contrast(1.1); /* Slight color reveal on hover */
+}
+
+.img-0 { background-image: url('https://images.unsplash.com/photo-1593030761754-04f8b9eebe3c?w=500&q=80'); }
+.img-1 { background-image: url('https://images.unsplash.com/photo-1620012253295-c159f0f9b3ec?w=500&q=80'); }
+.img-2 { background-image: url('https://images.unsplash.com/photo-1550614000-4b95d4edb713?w=500&q=80'); }
+.img-3 { background-image: url('https://images.unsplash.com/photo-1594938298596-eb5fd3822758?w=500&q=80'); }
+.img-4 { background-image: url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=500&q=80'); }
+.img-5 { background-image: url('https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=500&q=80'); }
+.img-6 { background-image: url('https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&q=80'); }
+.img-7 { background-image: url('https://images.unsplash.com/photo-1617137968427-85924c800a22?w=500&q=80'); }
+
+/* Overlay gradient to boost center contrast */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+  z-index: 1;
+}
+
+/* Centered Content */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.hero-giant-logo {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 15vw, 12rem);
+  line-height: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 10px 30px rgba(0,0,0,1);
+}
+
+.hero-giant-logo span {
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-weight: 500;
+  display: block;
+  margin-top: 1rem;
+  text-shadow: none;
+}
+
+.hero-slogan {
+  font-family: var(--font-sans);
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 500;
+  margin: 0.5rem 0 2.5rem 0;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.hero-explore-btn {
+  background: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  padding: 1rem 3rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 3rem;
+}
+
+.hero-explore-btn:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+.hero-sublinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #dddddd;
+}
+
+.hero-sublinks a {
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.hero-sublinks a:hover {
+  color: #ffffff;
+}
+
+.separator {
+  color: #555555;
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .hero-collage {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

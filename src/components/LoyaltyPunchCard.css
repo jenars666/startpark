@@ -1,0 +1,113 @@
+.loyalty-section {
+  background-color: #ffffff;
+  padding: 6rem 0;
+}
+
+.loyalty-card-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.03);
+  padding: 5rem 4rem;
+  text-align: center;
+}
+
+.loyalty-title {
+  font-family: var(--font-sans);
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: #111111;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.loyalty-desc {
+  font-family: var(--font-sans);
+  color: #777777;
+  font-size: 1.05rem;
+  margin-bottom: 4rem;
+}
+
+.punch-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+}
+
+.punch-hole {
+  width: 65px;
+  height: 65px;
+  border: 2px dashed #dddddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.punch-hole.filled {
+  border: 2px solid #111111;
+  background-color: #ffffff;
+}
+
+.punch-num {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: #bbbbbb;
+  font-size: 1.25rem;
+}
+
+.reward-hole {
+  width: 75px;
+  height: 75px;
+  border: 2px solid #eeeeee;
+  background-color: #f7f7f7;
+  border-radius: 8px; /* Square contrast for reward */
+}
+
+.reward-hole.unlocked {
+  background-color: #111111;
+  border-color: #111111;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.loyalty-footer {
+  margin-top: 2rem;
+}
+
+.loyalty-status-text {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: #666666;
+  font-weight: 500;
+}
+
+.status-highlight {
+  color: #111111;
+  font-weight: 700;
+  padding-bottom: 2px;
+  border-bottom: 2px solid #111111;
+}
+
+@media (max-width: 640px) {
+  .loyalty-card-wrapper {
+    padding: 3rem 1.5rem;
+  }
+  .punch-hole {
+    width: 50px;
+    height: 50px;
+  }
+  .reward-hole {
+    width: 60px;
+    height: 60px;
+  }
+  .punch-grid {
+    gap: 0.75rem;
+  }
+}
