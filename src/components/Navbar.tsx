@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Menu, Tag } from 'lucide-react';
 import './Navbar.css';
 
@@ -15,7 +16,7 @@ export default function Navbar() {
         <ul className="nav-links">
           <li><a href="#">NEW ARRIVALS</a></li>
           <li><a href="#">TRENDING NOW</a></li>
-          <li><a href="#">VESTHI&SHIRT</a></li>
+          <li><Link href="/vesthi-shirt">VESTHI&SHIRT</Link></li>
           <li className="dropdown">
             <a href="#">BOTTOMS <span className="dropdown-arrow">v</span></a>
             <ul className="dropdown-menu">

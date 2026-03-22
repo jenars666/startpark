@@ -33,6 +33,13 @@ export default function Header() {
           </div>
 
           <div className="logo-container">
+            <Link href="/home">
+              <img 
+                src="/images/logo.png" 
+                alt="Star Mens Park Logo" 
+                className="site-logo"
+              />
+            </Link>
           </div>
 
           <div className="header-actions">

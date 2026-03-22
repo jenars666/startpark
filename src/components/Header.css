@@ -90,6 +90,23 @@
   gap: 0.5rem;
 }
 
+.site-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.site-logo:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .site-logo {
+    height: 60px;
+  }
+}
+
 .header-sublinks {
   display: flex;
   align-items: center;
@@ -214,19 +231,23 @@
     flex-direction: column;
     gap: 1rem;
   }
+
   .search-bar {
     order: 2;
     max-width: 100%;
     width: 100%;
   }
+
   .logo-container {
     order: 1;
   }
+
   .header-actions {
     order: 3;
     width: 100%;
     justify-content: space-between;
   }
+
   .announcement-bar {
     display: none;
   }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import './Hero.css';
 
@@ -35,8 +36,9 @@ export default function Hero() {
           </button>
 
           <div className="hero-sublinks">
-            <a href="#">T-Shirts</a> <span className="separator">|</span>
-            <a href="#">Hoodies</a> <span className="separator">|</span>
+            <a href="#">Group Shirts
+            </a> <span className="separator">|</span>
+            <Link href="/vesthi-shirt">Vesti &Shirt</Link> <span className="separator">|</span>
             <a href="#">Designer Shirts</a> <span className="separator">|</span>
             <a href="#">Shirts</a> <span className="separator">|</span>
             <a href="#">Bottoms</a>

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { MapPin, Phone, Mail, Instagram, Facebook, Youtube, Chrome } from 'lucide-react';
 import './Footer.css';
 
@@ -10,7 +11,13 @@ export default function Footer() {
         
         {/* Brand / About */}
         <div className="footer-col brand-col">
-          <h2 className="footer-logo">Star<br/><span style={{ fontSize: '0.8rem', letterSpacing: '0.3em', fontFamily: 'var(--font-display)', textTransform: 'uppercase', display: 'block' }}>MENS PARK</span></h2>
+          <Link href="/home">
+            <img 
+              src="/images/logo.png" 
+              alt="Star Mens Park Logo" 
+              className="footer-logo-img"
+            />
+          </Link>
           <p className="footer-desc">
             We offer a wide range of <strong>premium readymade garments</strong> designed with comfort, quality, and perfection in mind. Our collection includes <strong>exclusive group shirts</strong>, <strong>executive wear</strong>, <strong>premium denim</strong>, <strong>casuals</strong> and <strong>traditional</strong> styles that are perfect for everyday wear and massive special occasions.
           </p>
