@@ -6,7 +6,7 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './group-shirt.css';
 
-export default function GroupShirtPage() { // trigger recompile
+export default function GroupShirtPage() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
