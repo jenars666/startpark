@@ -47,7 +47,7 @@ export default function GroupShirtPage() {
     }
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappNumber = '919876543210'; // Replace with actual number
+    const whatsappNumber = '918667321060'; // Replace with actual number
     window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
   };
 
