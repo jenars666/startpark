@@ -28,7 +28,7 @@ export const vesthiMainProducts = [
     name: 'Manamagan Copper Silk Complete Set',
     price: '1,750',
     oldPrice: '2,400',
-    img: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.12 AM.jpeg',
+    img: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.08 AM.jpeg',
     tag: 'New'
   },
   {
@@ -36,7 +36,7 @@ export const vesthiMainProducts = [
     name: 'Classic White Ceremonial Vesthi',
     price: '999',
     oldPrice: '1,499',
-    img: '/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.12 AM.jpeg',
+    img: '/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.08 AM.jpeg',
     tag: 'Classic'
   },
   {
@@ -44,7 +44,7 @@ export const vesthiMainProducts = [
     name: 'Mappillai Rose Gold Tissue Set',
     price: '2,300',
     oldPrice: '3,000',
-    img: '/images/Mappillai/WhatsApp Image 2026-03-22 at 10.50.31 AM.jpeg',
+    img: '/images/Mappillai/WhatsApp Image 2026-03-22 at 10.49.13 PM.jpeg',
     tag: 'Premium'
   }
 ];
