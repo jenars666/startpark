@@ -334,6 +334,13 @@
   color: inherit;
 }
 
+.category-link-button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+}
+
 .category-link .circle-image {
   cursor: pointer;
 }

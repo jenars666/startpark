@@ -81,19 +81,132 @@ export const casualProducts = [
   },
   {
     id: 25,
-    name: 'Premium Casual Texture - Green',
-    price: '1,350',
-    oldPrice: '1,999',
-    img: '/images/casual/image.png',
-    tag: 'Premium'
+    name: 'Updated Casual Style 1',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.10 PM (1).jpeg',
+    tag: 'New'
   },
   {
     id: 26,
-    name: 'Premium Casual Texture - Charcoal',
-    price: '1,350',
-    oldPrice: '1,999',
-    img: '/images/casual/image copy.png',
-    tag: 'Premium'
+    name: 'Updated Casual Style 2',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.10 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 27,
+    name: 'Updated Casual Style 3',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.11 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 28,
+    name: 'Updated Casual Style 4',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.12 PM (1).jpeg',
+    tag: 'New'
+  },
+  {
+    id: 29,
+    name: 'Updated Casual Style 5',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.12 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 30,
+    name: 'Updated Casual Style 6',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.13 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 31,
+    name: 'Updated Casual Style 7',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.14 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 32,
+    name: 'Updated Casual Style 8',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.15 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 33,
+    name: 'Updated Casual Style 9',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.16 PM (1).jpeg',
+    tag: 'New'
+  },
+  {
+    id: 34,
+    name: 'Updated Casual Style 10',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.16 PM (2).jpeg',
+    tag: 'New'
+  },
+  {
+    id: 35,
+    name: 'Updated Casual Style 11',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.16 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 36,
+    name: 'Updated Casual Style 12',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.56.17 PM.jpeg',
+    tag: 'New'
+  }
+  ,
+  {
+    id: 37,
+    name: 'Updated Casual Style 13',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.43.25 PM.jpeg',
+    tag: 'New'
+  },
+  {
+    id: 38,
+    name: 'Updated Casual Style 14',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.43.25 PM (2).jpeg',
+    tag: 'New'
+  },
+  {
+    id: 39,
+    name: 'Updated Casual Style 15',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.43.25 PM (1).jpeg',
+    tag: 'New'
+  },
+  {
+    id: 40,
+    name: 'Updated Casual Style 16',
+    price: '1,099',
+    oldPrice: '1,599',
+    img: '/images/casual/updated/WhatsApp Image 2026-03-29 at 9.43.24 PM.jpeg',
+    tag: 'New'
   }
 ];
 

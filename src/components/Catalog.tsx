@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateWhatsAppLink, handleInstantCheckout } from '../utils/checkoutUtils';
 import { BarChart2, ExternalLink, ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import './Catalog.css';
 
 const circleCategories = [
@@ -13,7 +13,7 @@ const circleCategories = [
   { name: 'Bottoms', img: '/images/bottoms.png', link: '#' },
   { name: 'Casual', img: '/images/casual2.png', link: '/casual-shirt' },
   { name: 'Designer Shirts', img: 'images/desigher.png', link: '#' },
-  { name: 'Formal', img: 'images/formal.png', link: '#' },
+  { name: 'Formal', img: 'images/formal.png', link: '/formal-shirt' },
 ];
 
 const trendingProducts = [
@@ -66,7 +66,6 @@ const trendingProducts = [
 ];
 
 export default function Catalog() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('recommended');
   const [priceFilter, setPriceFilter] = useState('all');
@@ -97,15 +96,7 @@ export default function Catalog() {
   }, [searchTerm, sortOrder, priceFilter]);
 
   const handleCategoryClick = (categoryName: string) => {
-    if (categoryName === 'Vesti &Shirt') {
-      router.push('/vesthi-shirt');
-    } else if (categoryName === 'GROUP SHIRT' || categoryName === 'Group Shirts') {
-      router.push('/group-shirt');
-    } else if (categoryName === 'Casual') {
-      router.push('/casual-shirt');
-    } else {
-      window.open(generateWhatsAppLink(categoryName, 1, 'M'), "_blank");
-    }
+    window.open(generateWhatsAppLink(categoryName, 1, 'M'), '_blank');
   };
 
   return (
@@ -128,12 +119,28 @@ export default function Catalog() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="category-circle-item"
               >
-                <div
-                  className="circle-image"
-                  style={{ backgroundImage: `url(${cat.img})` }}
-                  onClick={() => handleCategoryClick(cat.name)}
-                />
-                <h3 className="circle-label" onClick={() => handleCategoryClick(cat.name)} style={{ cursor: 'pointer' }}>{cat.name}</h3>
+                {cat.link !== '#' ? (
+                  <Link href={cat.link} className="category-link" aria-label={`Open ${cat.name}`}>
+                    <div
+                      className="circle-image"
+                      style={{ backgroundImage: `url(${cat.img})` }}
+                    />
+                    <h3 className="circle-label">{cat.name}</h3>
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="category-link category-link-button"
+                    onClick={() => handleCategoryClick(cat.name)}
+                    aria-label={`Open ${cat.name}`}
+                  >
+                    <div
+                      className="circle-image"
+                      style={{ backgroundImage: `url(${cat.img})` }}
+                    />
+                    <h3 className="circle-label">{cat.name}</h3>
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
@@ -202,7 +209,7 @@ export default function Catalog() {
                     No products found matching your criteria.
                   </motion.div>
                 ) : (
-                  filteredAndSortedProducts.map((prod, index) => (
+                  filteredAndSortedProducts.map((prod) => (
                     <motion.div
                       key={prod.id}
                       initial={{ opacity: 0, scale: 0.95 }}

@@ -1,0 +1,205 @@
+export interface FormalProduct {
+  id: number;
+  name: string;
+  price: string;
+  oldPrice: string;
+  img: string;
+  tag?: string;
+  color: string;
+  rating: number;
+  reviews: number;
+  sizes: string[];
+  discount?: number;
+}
+
+export const formalProducts: FormalProduct[] = [
+  {
+    id: 51,
+    name: 'Classic Formal White Shirt',
+    price: '1,450',
+    oldPrice: '1,999',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM (1).jpeg',
+    tag: 'Best Seller',
+    color: 'White',
+    rating: 4.5,
+    reviews: 127,
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    discount: 27
+  },
+  {
+    id: 52,
+    name: 'Slim Fit Formal Blue Shirt',
+    price: '1,380',
+    oldPrice: '1,899',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM.jpeg',
+    tag: 'Premium',
+    color: 'Blue',
+    rating: 4.7,
+    reviews: 89,
+    sizes: ['S', 'M', 'L', 'XL'],
+    discount: 20
+  },
+  {
+    id: 53,
+    name: 'Elegant Navy Formal Shirt',
+    price: '1,520',
+    oldPrice: '2,099',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.22 PM.jpeg',
+    tag: 'Trending',
+    color: 'Navy',
+    rating: 4.8,
+    reviews: 203,
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    discount: 28
+  },
+  {
+    id: 54,
+    name: 'Office Ready Light Grey Shirt',
+    price: '1,420',
+    oldPrice: '1,950',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM (1).jpeg',
+    tag: 'New Arrival',
+    color: 'Grey',
+    rating: 4.3,
+    reviews: 67,
+    sizes: ['S', 'M', 'L', 'XL']
+  },
+  {
+    id: 55,
+    name: 'Structured Formal Black Shirt',
+    price: '1,580',
+    oldPrice: '2,199',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM.jpeg',
+    tag: 'Executive',
+    color: 'Black',
+    rating: 4.6,
+    reviews: 156,
+    sizes: ['M', 'L', 'XL', 'XXL']
+  },
+  // Repeat pattern with varied names, same 5 images cycled
+  {
+    id: 56,
+    name: 'Crisp White Dress Shirt',
+    price: '1,480',
+    oldPrice: '2,050',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM (1).jpeg',
+    tag: 'Classic',
+    color: 'White',
+    rating: 4.4,
+    reviews: 94,
+    sizes: ['S', 'M', 'L', 'XL']
+  },
+  {
+    id: 57,
+    name: 'Royal Blue Formal Shirt',
+    price: '1,450',
+    oldPrice: '1,999',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM.jpeg',
+    tag: 'Best Seller',
+    color: 'Royal Blue',
+    rating: 4.9,
+    reviews: 234,
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    discount: 27
+  },
+  {
+    id: 58,
+    name: 'Charcoal Formal Shirt',
+    price: '1,550',
+    oldPrice: '2,150',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.22 PM.jpeg',
+    tag: 'Premium',
+    color: 'Charcoal',
+    rating: 4.2,
+    reviews: 112,
+    sizes: ['L', 'XL']
+  },
+  {
+    id: 59,
+    name: 'Silver Grey Dress Shirt',
+    price: '1,380',
+    oldPrice: '1,899',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM (1).jpeg',
+    tag: 'Trending',
+    color: 'Silver Grey',
+    rating: 4.5,
+    reviews: 78,
+    sizes: ['S', 'M', 'L']
+  },
+  {
+    id: 60,
+    name: 'Black Tie Formal Shirt',
+    price: '1,650',
+    oldPrice: '2,299',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM.jpeg',
+    tag: 'Executive',
+    color: 'Black',
+    rating: 4.9,
+    reviews: 345,
+    sizes: ['M', 'L', 'XL']
+  },
+  {
+    id: 61,
+    name: 'Pure White Business Shirt',
+    price: '1,420',
+    oldPrice: '1,950',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM (1).jpeg',
+    tag: 'Classic',
+    color: 'White',
+    rating: 4.6,
+    reviews: 189,
+    sizes: ['S', 'M', 'L', 'XL', 'XXL']
+  },
+  {
+    id: 62,
+    name: 'Midnight Blue Formal',
+    price: '1,520',
+    oldPrice: '2,099',
+    img: '/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM.jpeg',
+    tag: 'New Arrival',
+    color: 'Navy',
+    rating: 4.4,
+    reviews: 121,
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    discount: 28
+  },
+  {
+    id: 63,
+    name: 'Steel Grey Formal Shirt',
+    price: '1,480',
+    oldPrice: '2,050',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.22 PM.jpeg',
+    tag: 'Best Seller',
+    color: 'SlateGray',
+    rating: 4.5,
+    reviews: 98,
+    sizes: ['S', 'M', 'L', 'XL'],
+    discount: 28
+  },
+  {
+    id: 64,
+    name: 'Formal Light Blue Shirt',
+    price: '1,380',
+    oldPrice: '1,899',
+    tag: 'Premium',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM (1).jpeg',
+    color: 'LightBlue',
+    rating: 4.3,
+    reviews: 74,
+    sizes: ['S', 'M', 'L', 'XL'],
+    discount: 20
+  },
+  {
+    id: 65,
+    name: 'Ultimate Black Dress Shirt',
+    price: '1,580',
+    oldPrice: '2,199',
+    img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM.jpeg',
+    tag: 'Trending',
+    color: 'Black',
+    rating: 4.7,
+    reviews: 166,
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    discount: 28
+  }
+];
