@@ -48,11 +48,6 @@ export default function ProductDetailPage() {
   const [dynamicRecs, setDynamicRecs] = useState<any[]>([]);
 
   const handleAction = (action: string) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    
     if (action === 'cart') {
       addToCart({
         id: productId,
@@ -62,6 +57,10 @@ export default function ProductDetailPage() {
         quantity: qty
       });
     } else {
+      if (!user) {
+        router.push('/login');
+        return;
+      }
       router.push('/checkout');
     }
   };
@@ -175,13 +174,9 @@ export default function ProductDetailPage() {
                 <div className="extra-actions">
                   <button 
                     className="extra-action-btn"
-                    disabled={!isReady || wishlistLoading || !user}
+                    disabled={!isReady || wishlistLoading}
                     onClick={(e) => {
                       e.preventDefault();
-                      if (!user) {
-                        router.push('/login');
-                        return;
-                      }
                       if (isInWishlist(product.id)) {
                         removeFromWishlist(product.id);
                       } else {
