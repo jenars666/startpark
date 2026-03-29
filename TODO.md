@@ -1,15 +1,30 @@
-# Revert Log - All Visual Enhancements Undone
+# Vesthi-Shirt Product Page Enhancement Task
 
-Original state restored as requested:
+**Status: In Progress**
 
-- src/app/page.tsx: Removed motion wrapper and 'use client'
-- src/components/Hero.tsx: Reverted to original logo/CTA, removed parallax useEffect
-- src/components/Hero.css: Original Unsplash placeholders, basic styles
-- src/components/Catalog.css: Original circle shadows, no neo/glow
-- src/components/PromoBanners.css: Original overlays/hovers
-- src/app/globals.css: Removed --neo-glow/--neo-shadow vars
-- src/components/Catalog.tsx: Original content
+## Breakdown Steps (Approved Plan):
 
-Homepage back to pre-enhancement state. All changes undone successfully.
+### 1. **Create/Update TODO.md** [✅ Completed]
 
-**Status: Revert complete**
+### 2. **Enhance src/app/vesthi-shirt/product/[id]/page.tsx** [✅ Step 2 Complete - UI features added: gallery, variants, badges, breadcrumbs]
+
+### 3. **Upgrade src/app/vesthi-shirt/product.css**
+   - Premium gold theme (#D4AF37 accents)
+   - Gallery lightbox styles, swipe support
+   - Enhanced animations (staggered, micro-interactions)
+   - Glassmorphism for recommendations/reviews
+   - Sticky bar, improved mobile touch feedback
+   - Grid layout refinements
+
+### 4. **Test & Verify**
+   - Run `npm run dev`
+   - Test http://localhost:3000/vesthi-shirt/product/18
+   - Check responsive, cart/wishlist, no errors
+   - Optional: Apply similar to other product pages
+
+### 5. **Completion** [ ] 
+   - Update TODO.md as done
+   - `attempt_completion`
+
+**Next Step: Implement step 2 (page.tsx enhancements)**
+

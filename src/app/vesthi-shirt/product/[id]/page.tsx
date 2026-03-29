@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '../../../../hooks/useFirebaseAuth';
 import { useCart } from '../../../../context/CartContext';
 import { useWishlist } from '../../../../context/WishlistContext';
+import type { ProductType } from './ProductType';
 import '../../product.css';
 
 // Consolidating product data from all categories
@@ -41,11 +42,26 @@ export default function ProductDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const productId = parseInt(id);
-  const product = allProducts[productId as keyof typeof allProducts] || allProducts[101];
+  const product = allProducts[productId as keyof typeof allProducts] as ProductType || allProducts[101] as ProductType;
   
   const [qty, setQty] = useState(1);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [dynamicRecs, setDynamicRecs] = useState<any[]>([]);
+  const [dynamicRecs, setDynamicRecs] = useState<ProductType[]>([]);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [showSizeModal, setShowSizeModal] = useState(false);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [recIndex, setRecIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+
+  useEffect(() => {
+    if (product.colors && product.colors.length > 0) {
+      setSelectedColor(product.colors[0]);
+    }
+    if (product.sizes && product.sizes.length > 0) {
+      setSelectedSize(product.sizes[0]);
+    }
+  }, [product]);
 
   const handleAction = (action: string) => {
     if (action === 'cart') {
@@ -64,6 +80,8 @@ export default function ProductDetailPage() {
       router.push('/checkout');
     }
   };
+
+
   // Dynamic Recommendations (randomly pick 5 others)
   useEffect(() => {
     const others = Object.keys(allProducts)
@@ -81,31 +99,49 @@ export default function ProductDetailPage() {
       <Navbar />
 
       <main>
-       <div className="container back-container">
+        <div className="container">
+          <nav className="breadcrumbs">
+            <Link href="/">Home</Link> {' > '} <Link href="/vesthi-shirt">Vesthi Shirt</Link> {' > '} <span>{product.name}</span>
+          </nav>
           <Link href="/vesthi-shirt" className="back-link-custom">
-             BACK TO COLLECTIONS
+             ← BACK TO COLLECTIONS
           </Link>
         </div>
 
         <div className="container product-section">
           <div className="product-grid-main">
             {/* Left: Image */}
-              <div className="product-image-container" style={{ position: 'relative', width: '100%', height: '500px' }}>
-                <motion.div
-                  key={product.img} // Force re-animation on image change
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  style={{ width: '100%', height: '100%', position: 'relative' }}
-                >
-                  <Image
-                    src={product.img}
-                    alt={product.name}
-                    fill
-                    className="main-product-img"
-                    style={{ objectFit: 'cover' }}
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </motion.div>
+              <div className="product-gallery">
+                <div className="main-image-container" onClick={() => setShowGalleryModal(true)}>
+                  <motion.div
+                    key={(product.images ? product.images[selectedImage] : product.img)}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    style={{ width: '100%', height: '100%', position: 'relative' }}
+                  >
+                    <Image
+                      src={product.images ? product.images[selectedImage] : product.img}
+                      alt={product.name}
+                      fill
+                      className="main-product-img"
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </motion.div>
+                </div>
+                {product.images && product.images.length > 1 && (
+                  <div className="thumbnails">
+                    {product.images.map((thumb: string, idx: number) => (
+                      <div 
+                        key={idx}
+                        className={`thumb ${selectedImage === idx ? 'active' : ''}`}
+                        onClick={() => setSelectedImage(idx)}
+                      >
+                        <Image src={thumb} alt="" fill style={{objectFit: 'cover'}} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             {/* Right: Info */}
             <div className="product-info-column">
@@ -141,20 +177,67 @@ export default function ProductDetailPage() {
                 Perfect for weddings, festivals, and grand celebrations.
               </p>
 
-              <div className="spec-list">
-                <div className="spec-item">
-                  <span className="spec-label">Length</span>
-                  <span className="spec-value">{product.length}</span>
+                <div className="spec-list">
+                  <div className="spec-item">
+                    <span className="spec-label">Length</span>
+                    <span className="spec-value">{product.length}</span>
+                  </div>
+                  <div className="spec-item">
+                    <span className="spec-label">Weight</span>
+                    <span className="spec-value">{product.weight}</span>
+                  </div>
+                  <div className="spec-item">
+                    <span className="spec-label">Material</span>
+                    <span className="spec-value">Premium Silk/Cotton</span>
+                  </div>
+                  {product.stock && (
+                    <div className="spec-item">
+                      <span className="spec-label">Stock</span>
+                      <span className="spec-value">{product.stock} available</span>
+                    </div>
+                  )}
                 </div>
-                <div className="spec-item">
-                  <span className="spec-label">Weight</span>
-                  <span className="spec-value">{product.weight}</span>
+
+                <div className="variant-selector">
+                  <div className="variant-group">
+                    <label>Color</label>
+                    <div className="color-swatches">
+                      {product.colors?.map((color: string, idx: number) => (
+                        <button
+                          key={idx}
+                          className={`swatch ${selectedColor === color ? 'active' : ''}`}
+                          onClick={() => setSelectedColor(color)}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="variant-group">
+                    <label>Size</label>
+                    <div className="size-buttons">
+                      {product.sizes?.map((size: string, idx: number) => (
+                        <button
+                          key={idx}
+                          className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                          onClick={() => setSelectedSize(size)}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="spec-item">
-                  <span className="spec-label">Material</span>
-                  <span className="spec-value">Premium Silk/Cotton</span>
+
+                <button className="size-guide-btn" onClick={() => setShowSizeModal(true)}>
+                  Size Guide →
+                </button>
+
+                <div className="trust-badges">
+                  <div className="badge">Free Shipping</div>
+                  <div className="badge">7 Day Return</div>
+                  <div className="badge">EMI Available</div>
                 </div>
-              </div>
 
               <div className="purchase-actions">
                 <div className="quantity-picker">
@@ -285,7 +368,7 @@ export default function ProductDetailPage() {
           <div className="container">
             <h2>Recommended For You</h2>
             <div className="rec-grid">
-              {dynamicRecs.map((prod) => (
+{dynamicRecs.map((prod: ProductType) => (
                 <Link href={`/vesthi-shirt/product/${prod.id}`} key={prod.id} className="rec-card">
                     <div className="rec-img-box" style={{ position: 'relative', width: '100%', height: '200px' }}>
                       <Image src={prod.img} alt={prod.name} fill className="rec-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 50vw, 200px" />
