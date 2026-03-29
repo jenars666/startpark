@@ -27,7 +27,7 @@ export default function Hero() {
             𝕾𝖙𝖆𝖗<br /><span>𝕄𝔼ℕ𝕊 ℙ𝔸ℝ𝕂</span>
           </h1>
 
-          <h2 className="hero-slogan">Elevating Men’s Style in Dindigul</h2>
+          <h2 className="hero-slogan">Elevating Men's Style in Dindigul</h2>
           <button
             className="hero-explore-btn"
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}

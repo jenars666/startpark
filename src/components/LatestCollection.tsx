@@ -6,8 +6,8 @@ import { BarChart2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react
 import './Catalog.css';
 
 const latestProducts = [
-  { id: 11, name: 'Oversized Casual Shacket Shirt Black', img: 'https://images.unsplash.com/photo-1594938298596-eb5fd3822758?w=600&q=80', discount: '-36%', oldPrice: '1,699', price: '1,080' },
-  { id: 12, name: 'Oversized Casual Shacket Shirt White', img: 'https://images.unsplash.com/photo-1620012253295-c159f0f9b3ec?w=600&q=80', discount: '-36%', oldPrice: '1,699', price: '1,080' },
+  { id: 11, name: 'Oversized Casual Shacket Shirt Black', img: '/images/casual/WhatsApp Image 2026-03-25 at 8.59.32 PM.jpeg', discount: '-36%', oldPrice: '1,699', price: '1,080' },
+  { id: 12, name: 'Oversized Casual Shacket Shirt White', img: '/images/casual/WhatsApp Image 2026-03-25 at 8.59.33 PM.jpeg', discount: '-36%', oldPrice: '1,699', price: '1,080' },
   { id: 13, name: 'Poly Textured Oversized Shirt Lt Blue', img: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80', discount: '-44%', oldPrice: '889', price: '499' },
   { id: 14, name: 'Poly Textured Oversized Shirt Maroon', img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80', discount: '-44%', oldPrice: '499', price: '555' },
   { id: 15, name: 'Slim Fit Cotton Check Shirt Pink', img: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80', discount: '-16%', oldPrice: '1,055', price: '889' },

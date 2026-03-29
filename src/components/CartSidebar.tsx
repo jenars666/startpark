@@ -4,6 +4,7 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import './CartSidebar.css';
 
 export default function CartSidebar() {
@@ -56,8 +57,8 @@ export default function CartSidebar() {
                 <div className="cart-items-list no-scrollbar">
                   {cartItems.map((item) => (
                     <div key={item.id} className="cart-item">
-                      <div className="cart-item-img">
-                        <img src={item.img} alt={item.name} />
+                      <div className="cart-item-img" style={{ position: 'relative', width: '80px', height: '100px' }}>
+                        <Image src={item.img} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="80px" />
                       </div>
                       <div className="cart-item-info">
                         <h3>{item.name}</h3>

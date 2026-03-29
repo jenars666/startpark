@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, Phone, Mail, Instagram, Facebook, Youtube, Chrome } from 'lucide-react';
 import './Footer.css';
 
@@ -12,10 +13,16 @@ export default function Footer() {
         {/* Brand / About */}
         <div className="footer-col brand-col">
           <Link href="/home">
-            <img 
+            <Image 
               src="/images/logo.png" 
               alt="Star Mens Park Logo" 
+              width={350}
+              height={120}
+              priority
+              quality={100}
+              unoptimized
               className="footer-logo-img"
+              style={{ objectFit: 'contain' }}
             />
           </Link>
           <p className="footer-desc">

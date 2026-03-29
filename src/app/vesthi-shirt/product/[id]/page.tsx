@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Heart, Share2, Star, Minus, Plus, MessageCircle, HelpCircle, Image as ImageIcon, History } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '../../../../hooks/useFirebaseAuth';
 import { useCart } from '../../../../context/CartContext';
@@ -90,17 +91,23 @@ export default function ProductDetailPage() {
         <div className="container product-section">
           <div className="product-grid-main">
             {/* Left: Image */}
-            <div className="product-image-container">
-              <motion.img 
-                key={product.img} // Force re-animation on image change
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                src={product.img} 
-                alt={product.name} 
-                className="main-product-img"
-              />
-            </div>
-
+              <div className="product-image-container" style={{ position: 'relative', width: '100%', height: '500px' }}>
+                <motion.div
+                  key={product.img} // Force re-animation on image change
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={{ width: '100%', height: '100%', position: 'relative' }}
+                >
+                  <Image
+                    src={product.img}
+                    alt={product.name}
+                    fill
+                    className="main-product-img"
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </motion.div>
+              </div>
             {/* Right: Info */}
             <div className="product-info-column">
               <div className="product-header-group">
@@ -285,8 +292,8 @@ export default function ProductDetailPage() {
             <div className="rec-grid">
               {dynamicRecs.map((prod) => (
                 <Link href={`/vesthi-shirt/product/${prod.id}`} key={prod.id} className="rec-card">
-                  <div className="rec-img-box">
-                    <img src={prod.img} alt={prod.name} className="rec-img" />
+                    <div className="rec-img-box" style={{ position: 'relative', width: '100%', height: '200px' }}>
+                      <Image src={prod.img} alt={prod.name} fill className="rec-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 50vw, 200px" />
                   </div>
                   <div className="rec-info">
                     <h3 className="rec-name">{prod.name}</h3>

@@ -4,131 +4,136 @@ import Header from '../../../components/Header';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Heart, Share2, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, Share2, Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import '../vesthi.css';
-
-const collectionData = {
-  premium: {
-    title: 'Premium Vesthi & Shirts',
-    desc: 'The gold standard of traditional wear. Made from high-grade silk and premium cotton for that royal look.',
-    heroImg: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.07 AM.jpeg',
-    products: [
-      { id: 101, name: 'Manamagan Premium Gold Set', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.07%20AM%20%281%29.jpeg' },
-      { id: 102, name: 'Manamagan Royal Green Set', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.07%20AM.jpeg' },
-      { id: 103, name: 'Manamagan Premium Blue Set ', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.08%20AM.jpeg' },
-    ]
-  },
-  tissue: {
-    title: 'Tissue Vesthi & Shirts',
-    desc: 'Lightweight and elegant tissue fabrics, perfect for a modern yet traditional style.',
-    heroImg: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.10%20PM.jpeg',
-    products: [
-      { id: 18, name: 'Mappillai Collection - Pearl White Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.48.53%20PM.jpeg' },
-      { id: 19, name: 'Mappillai Collection - Luxury Cream Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.05%20PM.jpeg' },
-      { id: 20, name: 'Mappillai Collection - Elegant White Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.10%20PM.jpeg' },
-      { id: 21, name: 'Mappillai Collection - Modern Fit Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.13%20PM.jpeg' },
-      { id: 22, name: 'Mappillai Collection - Prime Edition Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/light gold.jpg' },
-      { id: 23, name: 'Mappillai Collection - Classic White Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.16%20PM.jpeg' },
-      { id: 24, name: 'Mappillai Collection - Elite Collection Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/elite.jpg' },
-      { id: 25, name: 'Mappillai Collection - Heritage Series Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/green.jpg' },
-      { id: 26, name: 'Mappillai Collection - Signature Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/silver.png' },
-      { id: 28, name: 'Mappillai Collection - Wedding Special Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/goold%20copy.jpg' },
-    ]
-  },
-  classic: {
-    title: 'Classic Vesthi & Shirts',
-    desc: 'The timeless essence of tradition. Our Heritage Classic matching sets are crafted for comfort and dignity.',
-    heroImg: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.03%20AM.jpeg',
-    products: [
-      { id: 5, name: 'Heritage Classic - Pearl White Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.02%20AM.jpeg' },
-      { id: 6, name: 'Heritage Classic - Silk Cream Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.03%20AM%20%281%29.jpeg' },
-      { id: 7, name: 'Traditional Classic Matching Set', price: '1,450', oldPrice: '1,999', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.03%20AM.jpeg' },
-      { id: 8, name: 'Heritage Classic - Ocean Blue Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.04%20AM%20%281%29.jpeg' },
-      { id: 9, name: 'Heritage Classic - Charcoal Grey Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.04%20AM%20%282%29.jpeg' },
-      { id: 10, name: 'Heritage Classic - Pure Silver Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.04%20AM.jpeg' },
-      { id: 11, name: 'Heritage Classic - Golden Aura Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.05%20AM%20%281%29.jpeg' },
-      { id: 12, name: 'Heritage Classic - Deep Ebony Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.05%20AM.jpeg' },
-      { id: 13, name: 'Heritage Classic - Slate Grey Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.06%20AM.jpeg' },
-      { id: 14, name: 'Heritage Classic - Teal Green Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.07%20AM.jpeg' },
-      { id: 15, name: 'Heritage Classic - Royal Maroon Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.08%20AM%20%281%29.jpeg' },
-      { id: 16, name: 'Heritage Classic - Deep Navy Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.08%20AM%20%282%29.jpeg' },
-      { id: 17, name: 'Heritage Classic - Midnight Black Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.08%20AM.jpeg' },
-    ]
-  }
-};
-
+import { vesthiTypeProducts } from './vesthi-type-products';
 import { useCart } from '../../../context/CartContext';
 import { useWishlist } from '../../../context/WishlistContext';
+import './vesthi-type.css';
 
-export default function TypeCollectionPage() {
+export default function VesthiTypePage() {
   const params = useParams();
+  const type = (params.type as string)?.toLowerCase() || 'tissue';
+  const products = vesthiTypeProducts[type as keyof typeof vesthiTypeProducts] || vesthiTypeProducts.tissue;
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  
-  const type = (params.type as string)?.toLowerCase() || 'classic';
-  const data = collectionData[type as keyof typeof collectionData] || collectionData.classic;
+
+  const getHeroData = () => {
+    switch (type) {
+      case 'premium':
+        return {
+          title: 'Premium Vesthi & Shirts',
+          subtitle: 'Royal Elegance',
+          heroImg: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQsIefMEfq_zLP0PIoES19RdgtgYsktfJOtFVvEntr610t6lgFO29A0RCqtDEN1pHsoZwWNZz3MJmqipWtDwZS0EaCOxtjC9nJ2gr6BIKEYHhhKg0CyBUsZAQ'
+        };
+      case 'tissue':
+        return {
+          title: 'Tissue Vesthi & Shirts',
+          subtitle: 'Lightweight Luxury',
+          heroImg: 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTCHWFIF2bG0sDC_aljaZGiCs1RN_iG0zQ1MqWpVJ9Nwy_1lIeovuZ9ppth4xyIzFW7ld1ZBDG0q4QDMLFTtlTU4P-UzUd3evEmaIc5JqloCDgoeGQwU2Z1'
+        };
+      case 'classic':
+      default:
+        return {
+          title: 'Classic Vesthi & Shirts',
+          subtitle: 'Timeless Tradition',
+          heroImg: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcT4OrjJZWP4_UyAR2RYr2phzwl3LP54Gy9BRwrsVS3Gw8izGTULUgo6w8ffV-xxDiX9hR4R_mK5Zs7hoKydtqT2GcCNbGbMTR_l773hpYP0ZB7J4GFTXtybZQ'
+        };
+    }
+  };
+
+  const heroData = getHeroData();
 
   return (
-    <div className="vesthi-page-wrapper">
+    <div className="vesthi-type-wrapper">
       <Header />
       <Navbar />
 
       <main>
-        <div className="container back-container">
-          <Link href="/vesthi-shirt" className="back-link">
-            <ArrowLeft size={16} /> BACK TO COLLECTIONS
-          </Link>
-        </div>
-
-        <section className="type-collection-hero">
-          <div className="container">
+        {/* Hero Section - Adapted from Casual */}
+        <section className="vesthi-type-hero">
+          <div className="vesthi-type-hero-content">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="hero-tag"
+            >
+              Vesthi Collection
+            </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="collection-page-title"
+              transition={{ delay: 0.1 }}
+              className="hero-title"
             >
-              {data.title}
+              {heroData.title} <br /><span>{heroData.subtitle}</span>
             </motion.h1>
-            <p className="collection-page-desc">{data.desc}</p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="hero-desc"
+            >
+              Explore our premium {type} collection of traditional vesthi and matching shirts, crafted for special occasions.
+            </motion.p>
+          </div>
+          <div className="vesthi-type-hero-image">
+              <Image src={heroData.heroImg} alt={heroData.title} fill className="hero-bg-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 50vw" />
           </div>
         </section>
 
-        <section className="collection-grid-section">
+        {/* Collection Section with Toolbar - Flipkart Style */}
+        <section className="vesthi-type-collection">
           <div className="container">
+            <div className="collection-header">
+              <h2 className="collection-title">{heroData.title}</h2>
+              <p className="collection-subtitle">Showing all {products.length} masterpieces</p>
+            </div>
+
+            {/* Toolbar */}
             <div className="collection-toolbar">
-              <div className="results-count">
-                Showing all {data.products.length} results
-              </div>
+              <div className="results-count">Showing 1 - {products.length} of {products.length} products</div>
               <div className="sort-filter">
-                <span className="sort-label">Sort by latest</span>
-                <div className="view-toggles">
-                  <span className="view-grid active"></span>
-                  <span className="view-list"></span>
-                </div>
+                <span className="sort-label">Sort by: 
+                  <select title="Sort products">
+                    <option>Recommended</option>
+                    <option>Price Low-High</option>
+                    <option>Price High-Low</option>
+                  </select>
+                </span>
+                <span className="filter-label">Filter: All Colors</span>
               </div>
             </div>
 
             <div className="product-grid">
-              {data.products.map((product, idx) => (
+              {products.map((product, idx) => (
                 <Link href={`/vesthi-shirt/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
+                    transition={{ delay: idx * 0.05 }}
                     className="v-product-card"
                   >
-                    <div className="v-product-image-box">
-                      <span className="v-discount-badge">-25%</span>
-                      <img src={product.img} alt={product.name} className="v-product-img-tag" />
+                      <div className="v-product-image-box" style={{ position: 'relative', width: '100%', height: '300px' }}>
+                        {product.tag && <span className="v-tag">{product.tag}</span>}
+                        <Image
+                          src={product.img}
+                          alt={product.name}
+                          fill
+                          className="v-product-image"
+                          style={{ objectFit: 'cover' }}
+                          sizes="(max-width: 768px) 100vw, 300px"
+                      />
                       <div className="v-hover-actions">
                         <button 
                           className="v-action-btn" 
                           title="Add to Cart"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
                           }}
                         >
@@ -139,6 +144,7 @@ export default function TypeCollectionPage() {
                           title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             if (isInWishlist(product.id)) {
                               removeFromWishlist(product.id);
                             } else {
@@ -146,7 +152,17 @@ export default function TypeCollectionPage() {
                             }
                           }}
                         >
-                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} color={isInWishlist(product.id) ? "#d32f2f" : "currentColor"} />
+                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} />
+                        </button>
+                        <button 
+                          className="v-action-btn" 
+                          title="Share"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Share2 size={18} />
                         </button>
                       </div>
                     </div>
@@ -156,11 +172,23 @@ export default function TypeCollectionPage() {
                         <span className="v-old-price">₹{product.oldPrice}</span>
                         <span className="v-new-price">₹{product.price}</span>
                       </div>
+                      <button className="v-enquire-btn">
+                        VIEW DETAILS <ArrowRight size={14} />
+                      </button>
                     </div>
                   </motion.div>
                 </Link>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Offer Section */}
+        <section className="vesthi-offer">
+          <div className="offer-content">
+            <h3>Premium Combo</h3>
+            <p>Buy Vesthi + Shirt Set and get complimentary pocket square!</p>
+            <button className="offer-btn">VIEW OFFERS</button>
           </div>
         </section>
       </main>
@@ -169,3 +197,4 @@ export default function TypeCollectionPage() {
     </div>
   );
 }
+

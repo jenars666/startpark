@@ -5,13 +5,14 @@ import Link from 'next/link';
 import Header from '../../components/Header';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import type { WishlistItem } from '../../context/WishlistContext';
 import { Heart, Trash2, ShoppingCart, Check, Share2, Search, Filter, ArrowUpDown } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
+import type { WishlistItem } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useFirebaseAuth } from '../../hooks/useFirebaseAuth';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import './wishlist.css';
 
 export default function WishlistPage() {
@@ -25,7 +26,7 @@ export default function WishlistPage() {
 
   // Calculate filtered items - BEFORE any conditional returns
   const filteredItems = useMemo(() => {
-    let filtered = wishlistItems.filter(item =>
+    const filtered = wishlistItems.filter(item =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -287,8 +288,8 @@ export default function WishlistPage() {
                   transition={{ delay: index * 0.03 }}
                   className="wishlist-card"
                 >
-                  <div className="card-image-container">
-                    <img src={item.img} alt={item.name} className="card-image" />
+                    <div className="card-image-container" style={{ position: 'relative', width: '100%', height: '300px' }}>
+                      <Image src={item.img} alt={item.name} fill className="card-image" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 300px" />
                     <div className="image-overlay">
                       <Heart className="heart-badge" size={32} fill="white" color="white" />
                     </div>

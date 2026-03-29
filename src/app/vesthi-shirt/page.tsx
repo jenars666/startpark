@@ -6,45 +6,11 @@ import Footer from '../../components/Footer';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Share2, Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import './vesthi.css';
-
-const vProducts = [
-  {
-    id: 1,
-    name: 'Manamagan Premium Gold Silk Set',
-    price: '1,599',
-    oldPrice: '2,200',
-    img: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.07 AM.jpeg',
-    tag: 'Best Seller'
-  },
-  {
-    id: 2,
-    name: 'Executive White Cotton Shirt & Vesthi Set',
-    price: '2,250',
-    oldPrice: '2,999',
-    img: '/images/group2.png',
-    tag: 'Premium'
-  },
-  {
-    id: 3,
-    name: 'Kalyan Traditional Pattu Vesthi',
-    price: '3,500',
-    oldPrice: '4,500',
-    img: '/images/groupshirt.png',
-    tag: 'New'
-  },
-  {
-    id: 4,
-    name: 'Pure Cotton Wedding Vesthi Collection',
-    price: '1,200',
-    oldPrice: '1,800',
-    img: '/images/group2.png',
-    tag: 'Traditional'
-  }
-];
-
+import Image from 'next/image';
+import { vesthiMainProducts } from './vesthi-main-products';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import './vesthi.css';
 
 export default function VesthiShirtPage() {
   const { addToCart } = useCart();
@@ -56,7 +22,6 @@ export default function VesthiShirtPage() {
       <Navbar />
 
       <main>
-        {/* Category Hero */}
         <section className="vesthi-hero">
           <div className="vesthi-hero-content">
             <motion.span
@@ -84,48 +49,39 @@ export default function VesthiShirtPage() {
             </motion.p>
           </div>
           <div className="vesthi-hero-image">
+            <Image src="/images/groupshirt.png" alt="Hero" fill className="hero-bg-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 50vw" />
             <div className="image-overlay" />
           </div>
         </section>
 
-        {/* Top Categories Section */}
         <section className="vesthi-types">
           <div className="container">
-            <h2 className="section-title text-center">Top Categories</h2>
+            <h2 className="collection-title text-center">Top Categories</h2>
             <div className="types-grid">
               <Link href="/vesthi-shirt/premium" className="type-card-link">
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="type-card"
-                >
-                  <div className="type-image silk-bg" />
+                <motion.div whileHover={{ y: -10 }} className="type-card">
+                  <div className="type-image cotton-bg" />
                   <div className="type-overlay">
-                    <h3>Premium Vesthi&Shirts </h3>
-                    <p>Premium Wedding Wear</p>
+                    <h3>Premium</h3>
+                    <p>Ethnic Wear</p>
                   </div>
                 </motion.div>
               </Link>
               <Link href="/vesthi-shirt/tissue" className="type-card-link">
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="type-card"
-                >
-                  <div className="type-image cotton-bg" />
+                <motion.div whileHover={{ y: -10 }} className="type-card">
+                  <div className="type-image silk-bg" />
                   <div className="type-overlay">
-                    <h3> tissue Vesthi&Shirts</h3>
-                    <p>Everyday Traditional</p>
+                    <h3>Tissue</h3>
+                    <p>Everyday</p>
                   </div>
                 </motion.div>
               </Link>
               <Link href="/vesthi-shirt/classic" className="type-card-link">
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="type-card"
-                >
+                <motion.div whileHover={{ y: -10 }} className="type-card">
                   <div className="type-image wedding-bg" />
                   <div className="type-overlay">
-                    <h3>Classic Vesthi&Shirts</h3>
-                    <p>Heritage Classic Collection</p>
+                    <h3>Classic</h3>
+                    <p>Heritage</p>
                   </div>
                 </motion.div>
               </Link>
@@ -133,36 +89,46 @@ export default function VesthiShirtPage() {
           </div>
         </section>
 
-        {/* Collection Section */}
         <section className="vesthi-collection">
           <div className="container">
             <div className="collection-header">
-              <h2 className="collection-title">Traditional Elegance</h2>
-              <p className="collection-subtitle">Explore our finest selection of Vesthis and matching shirts.</p>
+              <h2 className="collection-title">Featured Collection</h2>
+              <p className="collection-subtitle">Best selling Vesthi combinations</p>
             </div>
-
+            <div className="collection-toolbar">
+              <div className="results-count">Showing 1 - {vesthiMainProducts.length} products</div>
+              <div className="sort-filter">
+                <span className="sort-label">
+                  Sort by: 
+                  <select aria-label="Sort products">
+                    <option>Recommended</option>
+                    <option>Price Low to High</option>
+                    <option>Price High to Low</option>
+                  </select>
+                </span>
+                <span className="filter-label" aria-label="Filter">All Fabrics</span>
+              </div>
+            </div>
             <div className="product-grid">
-              {vProducts.map((product, idx) => (
+              {vesthiMainProducts.map((product, idx) => (
                 <Link href={`/vesthi-shirt/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
+                    transition={{ delay: idx * 0.05 }}
                     className="v-product-card"
                   >
                     <div className="v-product-image-box">
                       {product.tag && <span className="v-tag">{product.tag}</span>}
-                      <div
-                        className="v-product-image"
-                        style={{ backgroundImage: `url(${product.img})` }}
-                      />
+                      <Image src={product.img} alt={product.name} fill className="v-product-image" sizes="(max-width: 768px) 100vw, 300px" />
                       <div className="v-hover-actions">
                         <button 
                           className="v-action-btn" 
                           title="Add to Cart"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
                           }}
                         >
@@ -170,9 +136,10 @@ export default function VesthiShirtPage() {
                         </button>
                         <button 
                           className="v-action-btn" 
-                          title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                          title="Wishlist"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             if (isInWishlist(product.id)) {
                               removeFromWishlist(product.id);
                             } else {
@@ -180,12 +147,15 @@ export default function VesthiShirtPage() {
                             }
                           }}
                         >
-                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} color={isInWishlist(product.id) ? "#d32f2f" : "currentColor"} />
+                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} />
                         </button>
                         <button 
                           className="v-action-btn" 
-                          title="Share Product"
-                          onClick={(e) => e.preventDefault()}
+                          title="Share"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
                         >
                           <Share2 size={18} />
                         </button>
@@ -197,14 +167,8 @@ export default function VesthiShirtPage() {
                         <span className="v-old-price">₹{product.oldPrice}</span>
                         <span className="v-new-price">₹{product.price}</span>
                       </div>
-                      <button 
-                        className="v-enquire-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          // navigate or open modal
-                        }}
-                      >
-                        ENQUIRE NOW <ArrowRight size={14} />
+                      <button className="v-enquire-btn">
+                        VIEW DETAILS <ArrowRight size={14} />
                       </button>
                     </div>
                   </motion.div>
@@ -214,12 +178,11 @@ export default function VesthiShirtPage() {
           </div>
         </section>
 
-        {/* Special Offer Section */}
         <section className="vesthi-offer">
           <div className="offer-content">
-            <h3>Special Combo Offer</h3>
-            <p>Buy any Silk Vesthi and get a Premium Formal Shirt at 20% OFF!</p>
-            <button className="offer-btn">CLAIM OFFER</button>
+            <h3>Vesthi Combo Special</h3>
+            <p>Buy Vesthi + Shirt Set, get pocket square FREE!</p>
+            <button className="offer-btn">VIEW DEALS</button>
           </div>
         </section>
       </main>
@@ -228,3 +191,4 @@ export default function VesthiShirtPage() {
     </div>
   );
 }
+

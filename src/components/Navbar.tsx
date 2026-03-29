@@ -34,7 +34,7 @@ export default function Navbar() {
           <li className="dropdown">
             <a href="#">SHIRTS <ChevronDown size={14} className="dropdown-arrow" /></a>
             <ul className="dropdown-menu">
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Casual</a></li>
+              <li><Link href="/casual-shirt" onClick={() => setIsMobileMenuOpen(false)}>Casual</Link></li>
               <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Formal</a></li>
               <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Flannels</a></li>
               <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Polos</a></li>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, Heart, ShoppingCart, Instagram, Facebook, Youtube, Chrome, LogOut } from 'lucide-react';
 import { signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -79,7 +80,9 @@ export default function Header() {
           <div className="profile-dropdown-arrow" />
           <div className="profile-dropdown-header">
             {user.photoURL ? (
-              <img src={user.photoURL} alt="" className="profile-dropdown-avatar" />
+              <div style={{ position: 'relative', width: '40px', height: '40px' }} className="profile-dropdown-avatar">
+                <Image src={user.photoURL} alt="" fill sizes="40px" style={{ objectFit: 'cover' }} />
+              </div>
             ) : (
               <div className="profile-dropdown-avatar profile-dropdown-avatar-placeholder">
                 {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
@@ -109,7 +112,7 @@ export default function Header() {
         <div className="announcement-bar">
           <div className="container announcement-content">
             <p>
-              Special Offer: Group Shirts from ₹399 — All Sizes 22 to 5XL! <a href="#" className="shop-now-link">Enquire Now →</a>
+              Special Offer: Group Shirts from ₹399 — All Sizes 22 to 5XL! <Link href="/group-shirt" className="shop-now-link">Enquire Now →</Link>
             </p>
             <div className="social-links">
               <a href="#" aria-label="Instagram"><Instagram size={14} /></a>
@@ -132,10 +135,16 @@ export default function Header() {
 
             <div className="logo-container">
               <Link href="/" style={{ textDecoration: 'none' }}>
-                <img 
+                <Image 
                   src="/images/logo.png" 
                   alt="Star Mens Park Logo" 
+                  width={350}
+                  height={120}
+                  priority
+                  quality={100}
+                  unoptimized
                   className="site-logo"
+                  style={{ objectFit: 'contain' }}
                 />
               </Link>
             </div>
@@ -144,13 +153,15 @@ export default function Header() {
               {user ? (
                 <div className="user-profile" ref={avatarRef}>
                   {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName || "User"}
-                      className="avatar-circle"
-                      title={user.displayName || "Profile"}
-                      onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    />
+                    <div style={{ position: 'relative', width: '32px', height: '32px' }} className="avatar-circle" onClick={() => setShowProfileMenu(!showProfileMenu)} title={user.displayName || "Profile"}>
+                      <Image
+                        src={user.photoURL}
+                        alt={user.displayName || "User"}
+                        fill
+                        sizes="32px"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                   ) : (
                     <div 
                       className="avatar-circle avatar-placeholder"

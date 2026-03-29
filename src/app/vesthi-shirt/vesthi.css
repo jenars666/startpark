@@ -1,218 +1,12 @@
-/* Vesthi & Shirt Page Styles */
+/* Casual Shirt Page Styles - Adapted from Vesthi for Light Casual Theme */
+
+/* Base */
 .vesthi-page-wrapper {
   background-color: #ffffff;
   font-family: var(--font-sans);
 }
 
-.back-container {
-  padding-top: 2rem;
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  text-decoration: none;
-  margin-bottom: 2rem;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: #ffc107;
-}
-
-.type-collection-hero {
-  padding: 4rem 0;
-  background-color: #fdfdfd;
-  text-align: center;
-  border-bottom: 1px solid #eeeeee;
-}
-
-.collection-page-title {
-  font-family: var(--font-display);
-  font-size: 3.5rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-}
-
-.collection-page-desc {
-  font-size: 1.1rem;
-  color: #666;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.collection-grid-section {
-  padding: 6rem 0;
-}
-
-.vesthi-types {
-  padding: clamp(3rem, 6vw, 5rem) 0;
-  background-color: #f6f6f6;
-}
-
-.types-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 250px));
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.type-card-link {
-  display: block;
-  width: 100%;
-}
-
-.type-card {
-  position: relative;
-  height: 320px;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  background-color: #fff;
-  width: 100%;
-  margin: 0;
-}
-
-.type-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.silk-bg { background-image: url('/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.07 AM.jpeg'); }
-.cotton-bg { background-image: url('/images/Mappillai/green.jpg'); }
-.wedding-bg { background-image: url('/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.06 AM.jpeg'); }
-
-.type-card:hover .type-image {
-  transform: scale(1.1);
-}
-
-.type-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: clamp(1.1rem, 2.4vw, 1.75rem);
-  color: #fff;
-}
-
-.type-overlay h3 {
-  font-family: var(--font-display);
-  font-size: clamp(1.55rem, 2.2vw, 2rem);
-  line-height: 0.95;
-  margin-bottom: 0.35rem;
-  letter-spacing: 0.05em;
-}
-
-.type-overlay p {
-  font-size: clamp(0.78rem, 1.15vw, 0.92rem);
-  opacity: 0.8;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.vesthi-types .section-title {
-  color: #000000;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4.8vw, 3rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.section-title.text-center {
-  margin-top: 0;
-}
-
-@media (max-width: 991px) {
-  .types-grid {
-    grid-template-columns: repeat(2, minmax(0, 260px));
-    gap: 1.5rem;
-    padding: 0 1rem;
-  }
-
-  .type-card {
-    height: 320px;
-  }
-
-  .type-overlay {
-    padding: 1.25rem;
-  }
-
-  .type-overlay h3 {
-    font-size: 1.45rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .vesthi-types {
-    padding: 3rem 0;
-  }
-
-  .types-grid {
-    grid-template-columns: minmax(0, 320px);
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    padding: 0 1rem;
-  }
-
-  .type-card {
-    height: 350px;
-  }
-
-  .type-overlay {
-    padding: 1.5rem;
-  }
-
-  .type-overlay h3 {
-    font-size: 1.4rem;
-  }
-
-  .type-overlay p {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-  }
-}
-
-@media (max-width: 420px) {
-  .vesthi-types .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .types-grid {
-    max-width: 100%;
-  }
-
-  .type-card {
-    height: 270px;
-    border-radius: 16px;
-  }
-}
-
+/* Hero Section */
 .vesthi-hero {
   height: clamp(600px, 92vh, 950px);
   display: flex;
@@ -220,8 +14,8 @@
   justify-content: flex-start;
   position: relative;
   overflow: hidden;
-  background-color: #050505;
-  color: #fff;
+  background: linear-gradient(135deg, #fffbf0 0%, #f8f9fa 50%, #e8f4f8 100%);
+  color: #111;
 }
 
 .vesthi-hero-content {
@@ -238,7 +32,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5em;
-  color: #ffc107;
+  color: #d4a017;
   margin-bottom: 2rem;
   position: relative;
   padding-left: 50px;
@@ -251,24 +45,24 @@
   top: 50%;
   transform: translateY(-50%);
   width: 40px;
-  height: 1px;
-  background-color: #ffc107;
+  height: 2px;
+  background-color: #d4a017;
 }
 
 .hero-title {
   font-family: 'Oswald', var(--font-display), sans-serif;
-  font-size: clamp(3.5rem, 11vw, 8.5rem);
+  font-size: clamp(3.5rem, 11vw, 7rem);
   line-height: 0.85;
   letter-spacing: 0.02em;
   font-weight: 800;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
-  color: #ffffff;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+  color: #111111;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .hero-title span {
-  color: #ffc107;
+  color: #d4a017;
   display: block;
   margin-top: 0.1em;
 }
@@ -279,21 +73,21 @@
   font-weight: 300;
   line-height: 1.8;
   max-width: 520px;
-  color: #e2e2e2;
+  color: #555;
   margin-top: 1.5rem;
 }
 
 .vesthi-hero-image {
   flex: 1;
   height: 100%;
-  background-image: url('/images/groupshirt.png');
-  background-size: contain;
+  background-image: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.1)), url('/images/casual/WhatsApp Image 2026-03-25 at 8.59.32 PM.jpeg');
+  background-size: cover;
+  background-position: center right;
   background-repeat: no-repeat;
-  background-position: right top;
   position: absolute;
   right: 0;
   top: 0;
-  width: 100%;
+  width: 45%;
   z-index: 1;
 }
 
@@ -303,17 +97,40 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    #050505 0%, 
-    #050505 35%, 
-    rgba(5,5,5,0.85) 50%, 
-    rgba(5,5,5,0.4) 70%, 
-    transparent 100%);
+  background: linear-gradient(90deg, rgba(248,249,250,0.9) 0%, transparent 60%);
 }
 
-.collection-grid-section {
-  padding: 4rem 0 8rem 0;
-  background: #ffffff;
+/* Collection Section */
+.vesthi-collection {
+  padding: 6rem 0;
+  background-color: #ffffff;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.collection-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.collection-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #111;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.collection-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 300;
 }
 
 .collection-toolbar {
@@ -321,26 +138,35 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 0;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 4rem;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 3rem;
   font-size: 0.9rem;
+}
+
+.results-count {
   color: #777;
 }
 
 .sort-filter {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.sort-label {
+.sort-label, .filter-label {
   display: inline-flex;
   align-items: center;
-  padding: 0.6rem 1.2rem;
+  padding: 0.5rem 1rem;
   border: 1px solid #eee;
-  background: #fff;
-  border-radius: 4px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  color: #555;
+  font-weight: 500;
+}
+
+select {
+  background: white;
+  border: none;
   color: #333;
   font-weight: 500;
 }
@@ -348,64 +174,72 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 4rem 2rem;
+  gap: 2.5rem;
 }
 
-@media (max-width: 576px) {
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem 1rem;
-    padding: 0 1rem;
-  }
-}
-
+/* Product Cards */
 .v-product-card {
-  text-align: center;
   background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.v-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+  border-color: #e0e0e0;
 }
 
 .v-product-image-box {
-  width: 100%;
-  aspect-ratio: 1 / 1.1;
   position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   background-color: #f9f9f9;
-  margin-bottom: 1.5rem;
 }
 
-.v-discount-badge {
+.v-tag {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 1rem;
+  left: 1rem;
   background: #111;
-  color: #fff;
-  padding: 3px 6px;
+  color: white;
+  padding: 0.3rem 0.8rem;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
+  border-radius: 4px;
   z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.v-product-img-tag {
+.v-product-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.6s ease;
-  background-color: #fff;
-  transform: scale(1.05);
+  display: block;
 }
 
-.v-product-card:hover .v-product-img-tag {
-  transform: scale(1.1);
+.v-product-card:hover .v-product-image {
+  transform: scale(1.05);
 }
 
 .v-hover-actions {
   position: absolute;
   top: 1rem;
-  right: -50px;
+  right: -60px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: right 0.3s ease;
+  transition: right 0.4s ease;
+  z-index: 10;
 }
 
 .v-product-card:hover .v-hover-actions {
@@ -413,132 +247,231 @@
 }
 
 .v-action-btn {
-  width: 38px;
-  height: 38px;
-  background: #fff;
-  border: 1px solid #eee;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  color: #333;
+}
+
+.v-action-btn:hover {
+  background: white;
+  color: #111;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
 .v-product-details {
-  padding: 0 5px;
+  padding: 1.5rem 1.2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .v-product-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #333;
+  color: #111;
   margin-bottom: 0.5rem;
-  line-height: 1.3;
+  line-height: 1.4;
+  min-height: 2.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .v-product-price {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 1rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .v-old-price {
-  color: #aaa;
+  color: #888;
   text-decoration: line-through;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .v-new-price {
-  color: #111;
+  color: #c99c33;
   font-weight: 700;
-  font-size: 1rem;
-}
-
-.v-variants {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-top: 5px;
-}
-
-.variant-box {
-  width: 22px;
-  height: 22px;
-  border: 1px solid #ddd;
-  background: #fff;
-}
-
-.variant-plus {
-  font-size: 0.8rem;
-  color: #888;
+  font-size: 1.15rem;
 }
 
 .v-enquire-btn {
-  display: none;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: transparent;
+  color: #c99c33;
+  border: 1px solid #c99c33;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: auto;
 }
 
+.v-enquire-btn:hover {
+  background: #c99c33;
+  color: white;
+  transform: none;
+  box-shadow: none;
+}
+/* Offer Section */
 .vesthi-offer {
   padding: 6rem 0;
-  background-color: #111;
-  color: #fff;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   text-align: center;
 }
 
 .offer-content h3 {
   font-family: var(--font-display);
-  font-size: 3rem;
+  font-size: clamp(2rem, 6vw, 3rem);
   margin-bottom: 1rem;
+  color: #111;
 }
 
 .offer-content p {
-  font-size: 1.2rem;
-  opacity: 0.8;
-  margin-bottom: 2.5rem;
+  font-size: 1.25rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .offer-btn {
   padding: 1.25rem 3rem;
-  background-color: #ffc107;
-  color: #000;
+  background: #d4a017;
+  color: #111;
   border: none;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.1rem;
   letter-spacing: 0.1em;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 50px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(212,160,23,0.3);
 }
 
+.offer-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(212,160,23,0.4);
+}
+
+/* Responsive */
 @media (max-width: 991px) {
   .vesthi-hero {
     flex-direction: column;
     height: auto;
-    padding: 0;
+    padding: 4rem 0;
   }
   .vesthi-hero-content {
-    padding: 4rem 2rem;
     text-align: center;
-    order: 2;
     max-width: 100%;
-    background-color: #050505;
-  }
-  .hero-tag {
-    padding-left: 0;
-    justify-content: center;
-  }
-  .hero-tag::before {
-    display: none;
+    padding: 0 2rem 3rem;
   }
   .vesthi-hero-image {
     position: relative;
     width: 100%;
-    height: 450px;
-    order: 1;
+    height: 400px;
+    right: auto;
   }
-  .image-overlay {
-    background: linear-gradient(0deg, #050505 0%, transparent 100%);
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
   }
 }
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .sort-filter {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+
+/* Types Grid Section */
+.vesthi-types {
+  padding: 4rem 0;
+  background-color: #ffffff;
+}
+.types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.type-card-link {
+  text-decoration: none;
+}
+.type-card {
+  position: relative;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.type-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+.type-card:hover .type-image {
+  transform: scale(1.05);
+}
+.silk-bg { background-image: url('/images/tissue banner.jpg'); background-position: top center; }
+.cotton-bg { background-image: url('/images/Mappillai/premium banner.webp'); }
+.wedding-bg { background-image: url('/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.06 AM.jpeg'); }
+
+.type-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  text-align: center;
+}
+.type-overlay h3 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.type-overlay p {
+  font-size: 1rem;
+  color: #e0e0e0;
+}
+.hero-bg-img { width: 100%; height: 100%; object-fit: cover; object-position: center; } .v-product-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+

@@ -1,12 +1,15 @@
-# Wishlist Fix Task Progress
+# Revert Log - All Visual Enhancements Undone
 
-## Approved Plan Steps:
-- [x] 1. Update WishlistContext.tsx: Add console.logs/debug, expose isReady state
-- [ ] 2. Update product/[id]/page.tsx: Add user check, loading disable, toast feedback
-- [ ] 3. Update Header.tsx: Handle loading if needed  
-- [x] 4. Create src/app/wishlist/page.tsx: Display items + remove
-- [ ] 5. Test & verify
-- [ ] 6. Check Firebase rules if errors
+Original state restored as requested:
 
-**Current: Steps 1-4 complete. Test /vesthi-shirt/product/101 → Add to wishlist → check Header badge + /wishlist page**
+- src/app/page.tsx: Removed motion wrapper and 'use client'
+- src/components/Hero.tsx: Reverted to original logo/CTA, removed parallax useEffect
+- src/components/Hero.css: Original Unsplash placeholders, basic styles
+- src/components/Catalog.css: Original circle shadows, no neo/glow
+- src/components/PromoBanners.css: Original overlays/hovers
+- src/app/globals.css: Removed --neo-glow/--neo-shadow vars
+- src/components/Catalog.tsx: Original content
 
+Homepage back to pre-enhancement state. All changes undone successfully.
+
+**Status: Revert complete**

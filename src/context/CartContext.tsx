@@ -4,14 +4,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-
-export interface CartItem {
-  id: number | string;
-  name: string;
-  price: string;
-  img: string;
-  quantity: number;
-}
+import toast from 'react-hot-toast';
+import { CartItem } from '../types';
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -129,6 +123,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, item];
     });
+    toast.success('Added to Cart!');
     setIsCartOpen(true);
   };
 

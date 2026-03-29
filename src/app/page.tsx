@@ -12,6 +12,7 @@ import FoundersNote from "../components/FoundersNote";
 import LoyaltyPunchCard from "../components/LoyaltyPunchCard";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
+import ScrollReveal from "../components/ScrollReveal";
 
 export default function RootHomePage() {
   return (
@@ -20,15 +21,43 @@ export default function RootHomePage() {
       <Navbar />
       <main>
         <Hero />
-        <FeaturesBar />
-        <Catalog />
-        <PromoBanners />
-        <LatestCollection />
-        <StyleUpgrade />
-        <CustomerReviews />
-        <Newsletter />
-        <FoundersNote />
-        <LoyaltyPunchCard />
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <FeaturesBar />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="left" delay={0.2}>
+          <Catalog />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <PromoBanners />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="right" delay={0.2}>
+          <LatestCollection />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <StyleUpgrade />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.3}>
+          <CustomerReviews />
+        </ScrollReveal>
+
+        <ScrollReveal direction="none" delay={0.2}>
+          <Newsletter />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0.2}>
+          <FoundersNote />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0.2}>
+          <LoyaltyPunchCard />
+        </ScrollReveal>
+
         <Footer />
         <ScrollToTop />
       </main>

@@ -5,13 +5,7 @@ import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-
-export interface WishlistItem {
-  id: number | string;
-  name: string;
-  price: string;
-  img: string;
-}
+import { WishlistItem } from '../types';
 
 interface WishlistContextType {
   wishlistItems: WishlistItem[];

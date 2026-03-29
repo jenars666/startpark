@@ -328,6 +328,7 @@
   cursor: pointer;
   border: 2px solid #4CAF50;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
 }
 
 .avatar-circle:hover {
@@ -401,6 +402,7 @@
   object-fit: cover;
   border: 2px solid #e8e8e8;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .profile-dropdown-avatar-placeholder {

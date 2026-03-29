@@ -1,18 +1,19 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { generateWhatsAppLink, handleInstantCheckout } from '../utils/checkoutUtils';
-import { BarChart2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart2, ExternalLink, ChevronLeft, ChevronRight, Search, Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import './Catalog.css';
 
 const circleCategories = [
-  { name: 'Group Shirts', img: 'images/group2.png' },
-  { name: 'Vesti &Shirt', img: '/images/groupshirt.png' },
-  { name: 'Bottoms', img: '/images/bottoms.png' },
-  { name: 'Casual', img: '/images/casual2.png' },
-  { name: 'Designer shirts', img: 'images/desigher.png' },
-  { name: 'Formal', img: 'images/formal.png' },
+  { name: 'Group Shirts', img: 'images/group2.png', link: '/group-shirt' },
+  { name: 'Vesti &Shirt', img: '/images/groupshirt.png', link: '/vesthi-shirt' },
+  { name: 'Bottoms', img: '/images/bottoms.png', link: '#' },
+  { name: 'Casual', img: '/images/casual2.png', link: '/casual-shirt' },
+  { name: 'Designer Shirts', img: 'images/desigher.png', link: '#' },
+  { name: 'Formal', img: 'images/formal.png', link: '#' },
 ];
 
 const trendingProducts = [
@@ -66,12 +67,42 @@ const trendingProducts = [
 
 export default function Catalog() {
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('recommended');
+  const [priceFilter, setPriceFilter] = useState('all');
+
+  const filteredAndSortedProducts = useMemo(() => {
+    let result = [...trendingProducts];
+    
+    // Search Filter
+    if (searchTerm) {
+      result = result.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    
+    // Price Filter
+    if (priceFilter === 'under-1000') {
+      result = result.filter(p => parseInt(p.price.replace(/,/g, '')) < 1000);
+    } else if (priceFilter === 'over-1000') {
+      result = result.filter(p => parseInt(p.price.replace(/,/g, '')) >= 1000);
+    }
+
+    // Sort Order
+    if (sortOrder === 'price-low-high') {
+      result.sort((a, b) => parseInt(a.price.replace(/,/g, '')) - parseInt(b.price.replace(/,/g, '')));
+    } else if (sortOrder === 'price-high-low') {
+      result.sort((a, b) => parseInt(b.price.replace(/,/g, '')) - parseInt(a.price.replace(/,/g, '')));
+    }
+    
+    return result;
+  }, [searchTerm, sortOrder, priceFilter]);
 
   const handleCategoryClick = (categoryName: string) => {
     if (categoryName === 'Vesti &Shirt') {
       router.push('/vesthi-shirt');
     } else if (categoryName === 'GROUP SHIRT' || categoryName === 'Group Shirts') {
       router.push('/group-shirt');
+    } else if (categoryName === 'Casual') {
+      router.push('/casual-shirt');
     } else {
       window.open(generateWhatsAppLink(categoryName, 1, 'M'), "_blank");
     }
@@ -118,19 +149,69 @@ export default function Catalog() {
             crafted for the modern man who loves to stay ahead in fashion.
           </p>
 
+          <div className="catalog-toolbar" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px', textAlign: 'left' }}>
+            <div className="search-box" style={{ display: 'flex', alignItems: 'center', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '4px', padding: '0.5rem 1rem', flex: '1', minWidth: '250px' }}>
+              <Search size={18} style={{ color: '#6b7280', marginRight: '0.5rem' }} />
+              <input 
+                type="text" 
+                placeholder="Search trending products..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
+              />
+            </div>
+            <div className="filter-sort-controls" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Filter size={18} style={{ color: '#6b7280' }} />
+                <select 
+                  value={priceFilter}
+                  onChange={(e) => setPriceFilter(e.target.value)}
+                  style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '4px', outline: 'none' }}
+                >
+                  <option value="all">All Prices</option>
+                  <option value="under-1000">Under ₹1,000</option>
+                  <option value="over-1000">₹1,000 & Above</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <select 
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '4px', outline: 'none' }}
+                >
+                  <option value="recommended">Recommended</option>
+                  <option value="price-low-high">Price: Low to High</option>
+                  <option value="price-high-low">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div className="trending-grid-wrapper">
             <button className="nav-arrow left-arrow" aria-label="Previous items"><ChevronLeft size={20} /></button>
 
             <div className="trending-grid">
-              {trendingProducts.map((prod, index) => (
-                <motion.div
-                  key={prod.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="product-card"
-                >
+              <AnimatePresence>
+                {filteredAndSortedProducts.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }}
+                    style={{ gridColumn: '1 / -1', padding: '3rem', color: '#6b7280' }}
+                  >
+                    No products found matching your criteria.
+                  </motion.div>
+                ) : (
+                  filteredAndSortedProducts.map((prod, index) => (
+                    <motion.div
+                      key={prod.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      viewport={{ once: true, margin: '-50px' }}
+                      transition={{ duration: 0.3 }}
+                      className="product-card"
+                    >
                   <div
                     className="product-image-container"
                     onClick={() => handleInstantCheckout(parseInt(prod.price.replace(',', '')), prod.name)}
@@ -165,7 +246,9 @@ export default function Catalog() {
                     )}
                   </div>
                 </motion.div>
-              ))}
+                ))
+              )}
+              </AnimatePresence>
             </div>
 
             <button className="nav-arrow right-arrow" aria-label="Next items"><ChevronRight size={20} /></button>
@@ -179,3 +262,4 @@ export default function Catalog() {
     </div>
   );
 }
+

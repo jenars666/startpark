@@ -10,6 +10,7 @@ import {
   Minus, Plus, ShieldCheck, Truck, Clock 
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import '../../../vesthi-shirt/product.css';
 import { useFirebaseAuth } from '../../../../hooks/useFirebaseAuth';
@@ -123,12 +124,12 @@ export default function GroupProductDetail() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="main-image-container"
+                style={{ position: 'relative', width: '100%', height: '500px' }}
               >
-                <img src={product.img} alt={product.name} className="main-image" />
-                {discount > 0 && <span className="discount-badge">-{discount}%</span>}
+                <Image src={product.img} alt={product.name} fill className="main-image" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 50vw" />
               </motion.div>
             </div>
-
+            
             <div className="product-info">
               <h1 className="product-title">{product.name}</h1>
               
@@ -222,8 +223,8 @@ export default function GroupProductDetail() {
               <div className="recommendations-scroll">
                 {dynamicRecs.map((rec) => (
                   <Link href={`/group-shirt/product/${rec.id}`} key={rec.id} className="rec-card">
-                    <div className="rec-img">
-                      <img src={rec.img} alt={rec.name} />
+                      <div className="rec-img" style={{ position: 'relative', width: '100%', height: '200px' }}>
+                        <Image src={rec.img} alt={rec.name} fill style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 50vw, 200px" />
                     </div>
                     <div className="rec-details">
                       <h4>{rec.name}</h4>
