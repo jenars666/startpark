@@ -62,6 +62,10 @@ export default function Header() {
   const handleSignOut = async () => {
     setShowProfileMenu(false);
     sessionStorage.removeItem('welcome_toast_shown');
+    if (!auth) {
+      toast.error('Authentication is not configured right now.');
+      return;
+    }
     await firebaseSignOut(auth);
     toast.success('Signed out successfully');
   };

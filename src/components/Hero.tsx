@@ -36,11 +36,18 @@ export default function Hero() {
           </button>
 
           <div className="hero-sublinks">
-            <a href="#">Group Shirts
-            </a> <span className="separator">|</span>
+            <a href="#">Group Shirts</a> <span className="separator">|</span>
             <Link href="/vesthi-shirt">Vesti &Shirt</Link> <span className="separator">|</span>
             <a href="#">Designer Shirts</a> <span className="separator">|</span>
-            <a href="#">Shirts</a> <span className="separator">|</span>
+            <div className="hero-dropdown">
+              <a href="#">Shirts</a>
+              <div className="hero-dropdown-menu">
+                <Link href="/casual-shirt">Casual</Link>
+                <Link href="#">Formal</Link>
+                <Link href="#">Flannels</Link>
+                <Link href="#">Polos</Link>
+              </div>
+            </div> <span className="separator">|</span>
             <a href="#">Bottoms</a>
           </div>
         </motion.div>

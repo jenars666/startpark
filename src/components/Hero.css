@@ -165,6 +165,54 @@
   font-weight: 300;
 }
 
+.hero-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.hero-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 200;
+  border-radius: 4px;
+}
+
+.hero-dropdown:hover .hero-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hero-dropdown-menu a {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  color: #2c5282; /* Similar to the blue-ish color in the image */
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.hero-dropdown-menu a:hover {
+  color: #1a365d;
+  background-color: #f8f9fa;
+}
+
 @media (max-width: 768px) {
   .hero-collage {
     grid-template-columns: repeat(2, 1fr);

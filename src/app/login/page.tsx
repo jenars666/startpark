@@ -49,6 +49,11 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     setError('');
+    if (!auth || !googleProvider) {
+      setError('Google sign-in is not configured yet.');
+      setGoogleLoading(false);
+      return;
+    }
     try {
       await signInWithPopup(auth, googleProvider);
       router.push('/'); // Redirect to root after successful Firebase login

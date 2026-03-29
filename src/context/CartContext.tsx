@@ -39,7 +39,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         console.error("Local cart parse error", e);
       }
 
-      if (user) {
+      if (user && db) {
         try {
           // User logged in: fetch from Firestore
           const docRef = doc(db, 'users', user.uid);
@@ -94,7 +94,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!isInitialized) return; // don't overwrite during initial load
 
     const saveCart = async () => {
-      if (user) {
+      if (user && db) {
         try {
           const docRef = doc(db, 'users', user.uid);
           await setDoc(docRef, { cart: cartItems }, { merge: true });

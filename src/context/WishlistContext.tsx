@@ -39,7 +39,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         console.error("Local wishlist parse error", e);
       }
 
-      if (user) {
+      if (user && db) {
         try {
           console.log('🔄 Loading cloud wishlist for user:', user.uid);
           const docRef = doc(db, 'users', user.uid);
@@ -94,7 +94,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     if (!isReady) return;
 
     const saveWishlist = async () => {
-      if (user) {
+      if (user && db) {
         try {
           const docRef = doc(db, 'users', user.uid);
           await setDoc(docRef, { wishlist: wishlistItems }, { merge: true });
@@ -174,4 +174,3 @@ export const useWishlist = () => {
   if (!context) throw new Error("useWishlist must be used within a WishlistProvider");
   return context;
 };
-
