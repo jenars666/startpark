@@ -82,13 +82,12 @@
 .vesthi-type-hero-image {
   flex: 1;
   height: 100%;
-  
   background-size: cover;
-  background-position: center right;
+  background-position: center bottom; /* Show more of the model's face */
   background-repeat: no-repeat;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 0; /* Reset top offset */
   width: 45%;
   z-index: 1;
 }
@@ -434,4 +433,11 @@ select {
   height: 100%;
   object-fit: cover;
   object-position: top center;
+}
+
+@media (min-width: 992px) {
+  .classic-hero .hero-bg-img {
+    transform: translateY(-4%) scale(1.03);
+    transform-origin: top center;
+  }
 }

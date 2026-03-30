@@ -78,9 +78,9 @@
 .formal-hero-image {
   flex: 1;
   height: 100%;
-  background-image: linear-gradient(rgba(239,246,255,0.3), rgba(239,246,255,0.1)), url('/images/formal paline/WhatsApp Image 2026-03-25 at 9.13.25 PM (1).jpeg');
+  background-image: linear-gradient(rgba(239,246,255,0.3), rgba(239,246,255,0.1)), url('https://i.pinimg.com/736x/a0/c8/a1/a0c8a1e09f95fa1a4dab6324fd48b1d3.jpg');
   background-size: cover;
-  background-position: center right;
+  background-position: 100% 0%;
   background-repeat: no-repeat;
   position: absolute;
   right: 0;

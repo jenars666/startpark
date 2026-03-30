@@ -1,390 +1,788 @@
 'use client';
 
-import Header from '../../../../components/Header';
-import Navbar from '../../../../components/Navbar';
-import Footer from '../../../../components/Footer';
-import { motion } from 'framer-motion';
-import { ShoppingCart, Heart, Share2, Star, Minus, Plus, MessageCircle, HelpCircle, Image as ImageIcon, History } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { type FormEvent, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useFirebaseAuth } from '../../../../hooks/useFirebaseAuth';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  BadgePercent,
+  CheckCircle2,
+  ChevronDown,
+  Heart,
+  Search,
+  Share2,
+  ShoppingBag,
+  Star,
+  ThumbsUp,
+  Truck,
+  X,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { vesthiMainProducts } from '../../vesthi-main-products';
 import { useCart } from '../../../../context/CartContext';
 import { useWishlist } from '../../../../context/WishlistContext';
-import type { ProductType } from './ProductType';
-import '../../product.css';
+import './product-detail.css';
 
-// Consolidating product data from all categories
-const allProducts = {
-  // Premium
-  101: { id: 101, name: 'Manamagan Premium Gold Set', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.07%20AM%20%281%29.jpeg', length: '2 Meters', weight: '0.35kg', desc: 'A royal gold silk vesthi set with a premium matching shirt. Perfect for weddings and grand traditional ceremonies.' },
-  102: { id: 102, name: 'Manamagan Royal Green Set', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.07%20AM.jpeg', length: '2 Meters', weight: '0.35kg', desc: 'Exquisite royal green silk set designed for a majestic presence. High-grade silk and premium cotton blend.' },
-  103: { id: 103, name: 'Manamagan Premium Blue Set', price: '1,599', oldPrice: '2,200', img: '/images/Manamagan/WhatsApp%20Image%202026-03-22%20at%2010.50.08%20AM.jpeg', length: '2 Meters', weight: '0.35kg', desc: 'Premium blue vesthi and shirt set. Executive styling meets traditional comfort for a sophisticated look.' },
-  
-  // Tissue
-  18: { id: 18, name: 'Mappillai Collection - Pearl White Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.48.53%20PM.jpeg', length: '2 Meters', weight: '0.28kg', desc: 'Lightweight and elegant tissue fabric set in pearl white. Modern yet deeply traditional.' },
-  19: { id: 19, name: 'Mappillai Collection - Luxury Cream Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.05%20PM.jpeg', length: '2 Meters', weight: '0.28kg', desc: 'Luxury cream tissue set. Perfect for grooming rituals and semi-formal traditional events.' },
-  20: { id: 20, name: 'Mappillai Collection - Elegant White Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.10%20PM.jpeg', length: '2 Meters', weight: '0.28kg', desc: 'Refined elegance for the special day.' },
-  21: { id: 21, name: 'Mappillai Collection - Modern Fit Set', price: '1,150', oldPrice: '1,600', img: '/images/Mappillai/WhatsApp%20Image%202026-03-22%20at%2010.49.13%20PM.jpeg', length: '2 Meters', weight: '0.28kg', desc: 'Tailored for the contemporary traditionalist.' },
-  
-  // Classic
-  5: { id: 5, name: 'Heritage Classic - Imperial Blue Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.02%20AM.jpeg', length: '2 Meters', weight: '0.30kg', desc: 'Sleek imperial blue matching set for a modern look.' },
-  6: { id: 6, name: 'Heritage Classic - Silk Cream Set', price: '950', oldPrice: '1,300', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.03%20AM%20%281%29.jpeg', length: '2 Meters', weight: '0.30kg', desc: 'Classic cream matching set with a subtle silk finish for everyday elegance.' },
-  7: { id: 7, name: 'Traditional Classic Matching Set', price: '1,450', oldPrice: '1,999', img: '/images/Classic%20Matching%20Set/WhatsApp%20Image%202026-03-22%20at%2010.49.03%20AM.jpeg', length: '2 Meters', weight: '0.32kg', desc: 'A blend of comfort and style.' },
+const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'] as const;
+const RATING_BREAKDOWN = [
+  { label: '5', value: '85%' },
+  { label: '4', value: '10%' },
+  { label: '3', value: '3%' },
+  { label: '2', value: '1%' },
+  { label: '1', value: '1%' },
+];
+
+type DetailSection = 'features' | 'care' | 'style';
+type ReviewCard = {
+  name: string;
+  date: string;
+  title: string;
+  body: string;
+  rating: number;
+  helpful: number;
+  images: string[];
+  verified: boolean;
+  source: 'base' | 'user';
+};
+type ReviewDraft = {
+  name: string;
+  title: string;
+  body: string;
+  rating: number;
 };
 
-export default function ProductDetailPage() {
-  const { user } = useFirebaseAuth();
-  const router = useRouter();
-  const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist, loading: wishlistLoading, isReady } = useWishlist();
+const EMPTY_REVIEW_DRAFT: ReviewDraft = {
+  name: '',
+  title: '',
+  body: '',
+  rating: 5,
+};
+
+function parsePrice(value: string | number) {
+  if (typeof value === 'number') return value;
+  return Number(value.replace(/,/g, '')) || 0;
+}
+
+function formatCurrency(value: string | number) {
+  return new Intl.NumberFormat('en-IN').format(parsePrice(value));
+}
+
+function getDiscount(product: { price: string; oldPrice: string; discount?: number }) {
+  if (product.discount) return product.discount;
+
+  const current = parsePrice(product.price);
+  const old = parsePrice(product.oldPrice);
+
+  if (!old || old <= current) return 0;
+  return Math.round(((old - current) / old) * 100);
+}
+
+function renderStars(rating: number, className?: string) {
+  return Array.from({ length: 5 }, (_, index) => {
+    const filled = rating >= index + 1 || (rating > index && rating < index + 1);
+
+    return (
+      <Star
+        key={`${rating}-${index}`}
+        className={className}
+        fill={filled ? 'currentColor' : 'none'}
+        strokeWidth={1.7}
+      />
+    );
+  });
+}
+
+export default function VesthiProductDetailPage() {
   const params = useParams();
-  const id = params.id as string;
-  const productId = parseInt(id);
-  const product = allProducts[productId as keyof typeof allProducts] as ProductType || allProducts[101] as ProductType;
-  
-  const [qty, setQty] = useState(1);
+  const productId = Number(params.id);
+  const product = vesthiMainProducts.find((item) => item.id === productId) || vesthiMainProducts[0];
+
+  return <VesthiProductDetailView key={product.id} product={product} />;
+}
+
+function VesthiProductDetailView({ product }: { product: (typeof vesthiMainProducts)[number] }) {
+  const router = useRouter();
+  const { addToCart, totalItems } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const discount = getDiscount(product);
+
+  const galleryImages = useMemo(() => {
+    const pool = [
+      product.img,
+      ...vesthiMainProducts
+        .filter((item) => item.id !== product.id && item.tag === product.tag)
+        .map((item) => item.img),
+      ...vesthiMainProducts.filter((item) => item.id !== product.id).map((item) => item.img),
+    ];
+
+    return Array.from(new Set(pool)).slice(0, 3);
+  }, [product.id, product.img, product.tag]);
+
+  const relatedProducts = useMemo(() => {
+    const seen = new Set<string>([product.img]);
+
+    return vesthiMainProducts
+      .filter((item) => item.id !== product.id)
+      .filter((item) => {
+        if (seen.has(item.img)) return false;
+        seen.add(item.img);
+        return true;
+      })
+      .slice(0, 3);
+  }, [product.id, product.img]);
+
+  const featureItems = useMemo(
+    () => [
+      `${product.tag || 'Premium'} vesthi set with coordinated silk finish and traditional drape retention`,
+      'Signature ceremonial fit with structured collar and authentic occasion-ready styling',
+      'Soft-luster weave for weddings, receptions, temple visits, and festive celebrations',
+    ],
+    [product.tag]
+  );
+
+  const careItems = useMemo(
+    () => [
+      'Dry clean recommended or gentle cold water wash with similar shades',
+      'Steam iron on low to maintain fabric sheen and structure',
+      'Store in breathable cotton bag to preserve ceremonial quality',
+    ],
+    []
+  );
+
+  const baseReviewCards = useMemo<ReviewCard[]>(
+    () => [
+      {
+        name: 'Ravi Kumar',
+        date: 'Oct 12, 2023',
+        title: 'Perfect Wedding Set',
+        body: `The ${product.tag?.toLowerCase() || 'premium'} vesthi looks even better in person. Perfect drape and comfort for full ceremony day.`,
+        rating: 5,
+        helpful: 24,
+        images: galleryImages.slice(0, 2),
+        verified: true,
+        source: 'base',
+      },
+      {
+        name: 'Priya S.',
+        date: 'Sep 28, 2023',
+        title: 'Excellent Festive Quality',
+        body: `Great fit for family functions. The fabric holds shape well and the matching is impeccable.`,
+        rating: 4,
+        helpful: 12,
+        images: [],
+        verified: true,
+        source: 'base',
+      },
+    ],
+    [galleryImages, product.tag]
+  );
+
+  const [selectedSize, setSelectedSize] = useState('M');
+  const [openSection, setOpenSection] = useState<DetailSection | null>('features');
+  const [showSizeChart, setShowSizeChart] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [dynamicRecs, setDynamicRecs] = useState<ProductType[]>([]);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [showSizeModal, setShowSizeModal] = useState(false);
-  const [showGalleryModal, setShowGalleryModal] = useState(false);
-  const [recIndex, setRecIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
+  const [reviewDraft, setReviewDraft] = useState<ReviewDraft>(EMPTY_REVIEW_DRAFT);
+  const [reviewError, setReviewError] = useState('');
+  const [reviews, setReviews] = useState<ReviewCard[]>(baseReviewCards);
 
-  useEffect(() => {
-    if (product.colors && product.colors.length > 0) {
-      setSelectedColor(product.colors[0]);
-    }
-    if (product.sizes && product.sizes.length > 0) {
-      setSelectedSize(product.sizes[0]);
-    }
-  }, [product]);
+  const wishlistActive = isInWishlist(product.id);
+  const userReviews = reviews.filter((review) => review.source === 'user');
+  const displayedReviewCount = (product.reviews || 10) + userReviews.length;
+  const totalRatingValue = (product.rating || 4.8) * (product.reviews || 10) + userReviews.reduce((sum, review) => sum + review.rating, 0);
+  const displayedRating = totalRatingValue / displayedReviewCount;
+  const reviewCount = displayedReviewCount.toLocaleString('en-IN');
 
-  const handleAction = (action: string) => {
-    if (action === 'cart') {
-      addToCart({
-        id: productId,
-        name: product.name,
-        price: product.price,
-        img: product.img,
-        quantity: qty
-      });
-    } else {
-      if (!user) {
-        router.push('/login');
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push('/vesthi-shirt');
+  };
+
+  const addCurrentProductToCart = () => {
+    addToCart({
+      id: `${product.id}-${selectedSize}`,
+      name: `${product.name} (${selectedSize})`,
+      price: product.price,
+      img: product.img,
+      quantity: 1,
+    });
+  };
+
+  const handleBuyNow = () => {
+    addCurrentProductToCart();
+    toast.success('Added to bag. Continue checkout from cart.');
+  };
+
+  const handleShare = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : `http://localhost:3000/vesthi-shirt/product/${product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `Check out this vesthi set: ${product.name}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
         return;
       }
-      router.push('/checkout');
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Product link copied.');
+    } catch {
+      toast.error('Unable to share.');
     }
   };
 
+  const toggleWishlist = () => {
+    if (wishlistActive) {
+      removeFromWishlist(product.id);
+      return;
+    }
+    addToWishlist({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      img: product.img,
+    });
+  };
 
-  // Dynamic Recommendations (randomly pick 5 others)
-  useEffect(() => {
-    const others = Object.keys(allProducts)
-      .map(Number)
-      .filter(otherId => otherId !== productId);
-    
-    const shuffled = others.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 5).map(sId => allProducts[sId as keyof typeof allProducts]);
-    setDynamicRecs(selected);
-  }, [productId]);
+  const handleHelpfulClick = (index: number) => {
+    setReviews((prev) =>
+      prev.map((review, itemIndex) =>
+        itemIndex === index ? { ...review, helpful: review.helpful + 1 } : review
+      )
+    );
+  };
+
+  const handleReviewFieldChange = (field: keyof ReviewDraft, value: string | number) => {
+    setReviewDraft((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    setReviewError('');
+  };
+
+  const handleReviewSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const name = reviewDraft.name.trim();
+    const title = reviewDraft.title.trim();
+    const body = reviewDraft.body.trim();
+
+    if (!name || !title || !body || !reviewDraft.rating) {
+      setReviewError('Please fill name, rating, title, review.');
+      return;
+    }
+
+    const submittedReview: ReviewCard = {
+      name,
+      title,
+      body,
+      rating: reviewDraft.rating,
+      helpful: 0,
+      images: [],
+      verified: false,
+      source: 'user',
+      date: new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+    };
+
+    setReviews((prev) => [submittedReview, ...prev]);
+    setShowReviewForm(false);
+    setReviewDraft(EMPTY_REVIEW_DRAFT);
+    setReviewError('');
+    toast.success('Review submitted. Thanks!');
+  };
+
+  const renderAccordionButton = (section: DetailSection, label: string) => {
+    const isOpen = openSection === section;
+
+    return (
+      <button
+        type="button"
+        className="atelier-accordion-trigger"
+        onClick={() => setOpenSection(isOpen ? null : section)}
+      >
+        <span>{label}</span>
+        <ChevronDown className={`atelier-chevron ${isOpen ? 'atelier-chevron-open' : ''}`} />
+      </button>
+    );
+  };
 
   return (
-    <div className="product-detail-wrapper">
-      <Header />
-      <Navbar />
+    <div className="atelier-product-page">
+      <header className="atelier-topbar">
+        <div className="atelier-topbar-inner">
+          <div className="atelier-brand-block">
+            <button type="button" className="atelier-icon-button" onClick={handleBack} aria-label="Go back">
+              <ArrowLeft size={20} />
+            </button>
+            <Link href="/" className="atelier-wordmark">
+              VESTHI
+            </Link>
+          </div>
 
-      <main>
-        <div className="container">
-          <nav className="breadcrumbs">
-            <Link href="/">Home</Link> {' > '} <Link href="/vesthi-shirt">Vesthi Shirt</Link> {' > '} <span>{product.name}</span>
-          </nav>
-          <Link href="/vesthi-shirt" className="back-link-custom">
-             ← BACK TO COLLECTIONS
-          </Link>
+          <div className="atelier-top-actions">
+            <button
+              type="button"
+              className="atelier-icon-button"
+              onClick={() => router.push('/vesthi-shirt')}
+              aria-label="Browse vesthi shirts"
+            >
+              <Search size={19} />
+            </button>
+            <button
+              type="button"
+              className={`atelier-icon-button ${wishlistActive ? 'is-active' : ''}`}
+              onClick={toggleWishlist}
+              aria-label={wishlistActive ? 'Remove from wishlist' : 'Add to wishlist'}
+            >
+              <Heart size={19} fill={wishlistActive ? 'currentColor' : 'none'} />
+            </button>
+            <button
+              type="button"
+              className="atelier-icon-button atelier-cart-button"
+              onClick={addCurrentProductToCart}
+              aria-label="Add to bag"
+            >
+              <ShoppingBag size={19} />
+              {totalItems > 0 && <span className="atelier-cart-count">{Math.min(totalItems, 99)}</span>}
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div className="container product-section">
-          <div className="product-grid-main">
-            {/* Left: Image */}
-              <div className="product-gallery">
-                <div className="main-image-container" onClick={() => setShowGalleryModal(true)}>
-                  <motion.div
-                    key={(product.images ? product.images[selectedImage] : product.img)}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    style={{ width: '100%', height: '100%', position: 'relative' }}
-                  >
-                    <Image
-                      src={product.images ? product.images[selectedImage] : product.img}
-                      alt={product.name}
-                      fill
-                      className="main-product-img"
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  </motion.div>
+      <main className="atelier-detail-main">
+        <section className="atelier-gallery-section">
+          <div className="atelier-gallery-stage">
+            {product.tag && <span className="atelier-product-tag">{product.tag}</span>}
+
+            <Image
+              src={product.img}
+              alt={product.name}
+              fill
+              className="atelier-gallery-image"
+              sizes="100vw"
+              priority
+            />
+
+            <div className="atelier-rating-pill">
+              <span className="atelier-rating-value">{(product.rating || 4.8).toFixed(1)}</span>
+              <Star size={14} fill="currentColor" />
+              <span className="atelier-rating-divider" />
+              <span>{reviewCount}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="atelier-summary-card">
+          <div className="atelier-copy-block">
+            <p className="atelier-overline">Vesthi Collection</p>
+            <h1 className="atelier-product-title">{product.name}</h1>
+            <p className="atelier-product-subtitle">
+              Premium vesthi and shirt set for weddings, receptions, and traditional occasions with authentic ceremonial styling.
+            </p>
+          </div>
+
+          <div className="atelier-price-row">
+            <span className="atelier-current-price">₹{formatCurrency(product.price)}</span>
+            <span className="atelier-old-price">₹{formatCurrency(product.oldPrice)}</span>
+            <span className="atelier-discount">({discount}% OFF)</span>
+          </div>
+
+          <p className="atelier-tax-note">inclusive of all taxes</p>
+
+          <div className="atelier-offer-panel">
+            <div className="atelier-offer-item">
+              <BadgePercent size={18} />
+              <span>Bank Offer: 10% instant discount on Axis Bank cards</span>
+            </div>
+            <div className="atelier-offer-item">
+              <Truck size={18} />
+              <span>Free shipping on orders above ₹1,999</span>
+            </div>
+          </div>
+
+          <div className="atelier-cta-row">
+            <button type="button" className="atelier-secondary-cta" onClick={addCurrentProductToCart}>
+              <ShoppingBag size={18} />
+              Add to Bag
+            </button>
+            <button type="button" className="atelier-primary-cta" onClick={handleBuyNow}>
+              Buy Now
+            </button>
+          </div>
+
+          <div className="atelier-utility-row">
+            <button type="button" className="atelier-utility-button" onClick={toggleWishlist}>
+              <Heart size={16} fill={wishlistActive ? 'currentColor' : 'none'} />
+              {wishlistActive ? 'Saved' : 'Wishlist'}
+            </button>
+            <button type="button" className="atelier-utility-button" onClick={handleShare}>
+              <Share2 size={16} />
+              Share
+            </button>
+          </div>
+        </section>
+
+        <section className="atelier-size-panel">
+          <div className="atelier-panel-head">
+            <h2>Select Size</h2>
+            <button type="button" className="atelier-text-button" onClick={() => setShowSizeChart(true)}>
+              Size Chart
+            </button>
+          </div>
+
+          <div className="atelier-size-grid">
+            {ALL_SIZES.map((size) => {
+              const unavailable = !(product.sizes || []).includes(size);
+
+              return (
+                <button
+                  type="button"
+                  key={size}
+                  className={`atelier-size-chip ${selectedSize === size ? 'is-selected' : ''}`}
+                  onClick={() => setSelectedSize(size)}
+                  disabled={unavailable}
+                >
+                  {size}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="atelier-stock-note">ONLY 2 LEFT AT THIS PRICE</p>
+        </section>
+
+        <section className="atelier-details-panel">
+          <div className="atelier-accordion-item">
+            {renderAccordionButton('features', 'Product Features')}
+            {openSection === 'features' && (
+              <div className="atelier-accordion-body">
+                {featureItems.map((item) => (
+                  <p key={item}>• {item}</p>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="atelier-accordion-item">
+            {renderAccordionButton('care', 'Fabric & Care')}
+            {openSection === 'care' && (
+              <div className="atelier-accordion-body">
+                {careItems.map((item) => (
+                  <p key={item}>• {item}</p>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="atelier-accordion-item">
+            {renderAccordionButton('style', 'Style Note')}
+            {openSection === 'style' && (
+              <div className="atelier-accordion-body">
+                <p>
+                  Pair this vesthi set with gold jewelry, minimal footwear, and traditional accessories for complete ceremonial elegance.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="atelier-related-section">
+          <div className="atelier-section-title-row">
+            <h2>You Might Also Like</h2>
+            <Link href="/vesthi-shirt" className="atelier-inline-link">
+              Browse collection
+            </Link>
+          </div>
+
+          <div className="atelier-related-rail no-scrollbar">
+            {relatedProducts.map((related) => (
+              <Link href={`/vesthi-shirt/product/${related.id}`} className="atelier-related-card" key={related.id}>
+                <div className="atelier-related-image-wrap">
+                  <Image
+                    src={related.img}
+                    alt={related.name}
+                    fill
+                    className="atelier-related-image"
+                    sizes="(max-width: 768px) 72vw, 220px"
+                  />
                 </div>
-                {product.images && product.images.length > 1 && (
-                  <div className="thumbnails">
-                    {product.images.map((thumb: string, idx: number) => (
-                      <div 
-                        key={idx}
-                        className={`thumb ${selectedImage === idx ? 'active' : ''}`}
-                        onClick={() => setSelectedImage(idx)}
+                <p className="atelier-related-brand">Vesthi</p>
+                <p className="atelier-related-name">{related.name}</p>
+                <p className="atelier-related-price">₹{formatCurrency(related.price)}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="atelier-reviews-section">
+          <div className="atelier-section-title-row">
+            <h2>Customer Reviews</h2>
+            <button
+              type="button"
+              className="atelier-inline-link atelier-inline-button"
+              onClick={() => setShowReviewForm(true)}
+            >
+              Write a Review
+            </button>
+          </div>
+
+          <div className="atelier-review-summary">
+            <div className="atelier-overall-rating">
+              <strong>{displayedRating.toFixed(1)}</strong>
+              <div className="atelier-stars-row">{renderStars(displayedRating, 'atelier-star-icon')}</div>
+              <span>{reviewCount} Reviews</span>
+            </div>
+
+            <div className="atelier-rating-breakdown">
+              {RATING_BREAKDOWN.map((item) => (
+                <div className="atelier-breakdown-row" key={item.label}>
+                  <span>{item.label}</span>
+                  <div className="atelier-progress-track">
+                    <div className="atelier-progress-fill" style={{ width: item.value }} />
+                  </div>
+                  <span>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {showReviewForm && (
+            <form className="atelier-review-form" onSubmit={handleReviewSubmit}>
+              <div className="atelier-review-form-header">
+                <div>
+                  <h3>Write a Review</h3>
+                  <p>Share your fit, fabric, and styling feedback for this vesthi set.</p>
+                </div>
+                <button
+                  type="button"
+                  className="atelier-review-close"
+                  onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewError('');
+                  }}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="atelier-review-form-grid">
+                <label className="atelier-field">
+                  <span>Your Name</span>
+                  <input
+                    type="text"
+                    value={reviewDraft.name}
+                    onChange={(event) => handleReviewFieldChange('name', event.target.value)}
+                    placeholder="Enter your name"
+                  />
+                </label>
+
+                <label className="atelier-field">
+                  <span>Review Title</span>
+                  <input
+                    type="text"
+                    value={reviewDraft.title}
+                    onChange={(event) => handleReviewFieldChange('title', event.target.value)}
+                    placeholder="Summarize your experience"
+                  />
+                </label>
+              </div>
+
+              <div className="atelier-rating-picker">
+                <span>Your Rating</span>
+                <div className="atelier-rating-buttons">
+                  {Array.from({ length: 5 }, (_, index) => {
+                    const value = index + 1;
+                    const active = reviewDraft.rating >= value;
+
+                    return (
+                      <button
+                        type="button"
+                        key={value}
+                        className={`atelier-rating-star-button ${active ? 'is-active' : ''}`}
+                        onClick={() => handleReviewFieldChange('rating', value)}
+                        aria-label={`Give ${value} star${value > 1 ? 's' : ''}`}
                       >
-                        <Image src={thumb} alt="" fill style={{objectFit: 'cover'}} />
+                        <Star size={18} fill={active ? 'currentColor' : 'none'} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="atelier-field">
+                <span>Your Review</span>
+                <textarea
+                  value={reviewDraft.body}
+                  onChange={(event) => handleReviewFieldChange('body', event.target.value)}
+                  rows={5}
+                  placeholder="Tell shoppers about fit, fabric, and ceremonial look."
+                />
+              </label>
+
+              {reviewError && <p className="atelier-form-error">{reviewError}</p>}
+
+              <div className="atelier-review-form-actions">
+                <button
+                  type="button"
+                  className="atelier-review-cancel"
+                  onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewError('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="atelier-review-submit">
+                  Submit Review
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="atelier-review-list">
+            {reviews.map((review, index) => (
+              <article className="atelier-review-card" key={`${review.name}-${review.date}`}>
+                <div className="atelier-review-head">
+                  <div>
+                    <div className="atelier-review-author">
+                      <span>{review.name}</span>
+                      {review.verified && (
+                        <span className="atelier-verified-badge">
+                          <CheckCircle2 size={12} />
+                          Verified
+                        </span>
+                      )}
+                      {!review.verified && <span className="atelier-review-fresh-badge">New Review</span>}
+                    </div>
+                    <div className="atelier-mini-stars">{renderStars(review.rating, 'atelier-mini-star')}</div>
+                  </div>
+                  <time>{review.date}</time>
+                </div>
+
+                <h3>{review.title}</h3>
+                <p className="atelier-review-copy">{review.body}</p>
+
+                {review.images.length > 0 && (
+                  <div className="atelier-review-images no-scrollbar">
+                    {review.images.map((image, imageIndex) => (
+                      <div className="atelier-review-image-wrap" key={`${image}-${imageIndex}`}>
+                        <Image src={image} alt="" fill className="atelier-review-image" sizes="64px" />
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
-            {/* Right: Info */}
-            <div className="product-info-column">
-              <div className="product-header-group">
-                <h1>{product.name}</h1>
-                <div className="rating-row">
-                  <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                  <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                  <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                  <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                  <Star size={16} fill="#ccc" stroke="#ccc" />
-                  <span className="rating-count">4.8 (120 reviews)</span>
-                </div>
-                
-                <div className="price-container">
-                  <div className="price-tag">
-                    <span className="discount-percent">
-                      ↓{Math.round((1 - (parseInt((product.price as string).replace(/,/g, '')) / parseInt((product.oldPrice as string).replace(/,/g, '')))) * 100)}%
-                    </span>
-                    <span className="old-price-lg">₹{product.oldPrice}</span>
-                    <span className="new-price-lg">₹{product.price}</span>
-                  </div>
-                </div>
 
-                <div className="product-badges">
-                  <span className="p-badge">Premium Pure Cotton</span>
-                  <span className="p-badge">Executive Quality</span>
-                </div>
-              </div>
-
-              <p className="product-desc-text">
-                {product.desc} Our garments are designed with comfort, quality, and perfection in mind. 
-                Perfect for weddings, festivals, and grand celebrations.
-              </p>
-
-                <div className="spec-list">
-                  <div className="spec-item">
-                    <span className="spec-label">Length</span>
-                    <span className="spec-value">{product.length}</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Weight</span>
-                    <span className="spec-value">{product.weight}</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Material</span>
-                    <span className="spec-value">Premium Silk/Cotton</span>
-                  </div>
-                  {product.stock && (
-                    <div className="spec-item">
-                      <span className="spec-label">Stock</span>
-                      <span className="spec-value">{product.stock} available</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="variant-selector">
-                  <div className="variant-group">
-                    <label>Color</label>
-                    <div className="color-swatches">
-                      {product.colors?.map((color: string, idx: number) => (
-                        <button
-                          key={idx}
-                          className={`swatch ${selectedColor === color ? 'active' : ''}`}
-                          onClick={() => setSelectedColor(color)}
-                        >
-                          {color}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="variant-group">
-                    <label>Size</label>
-                    <div className="size-buttons">
-                      {product.sizes?.map((size: string, idx: number) => (
-                        <button
-                          key={idx}
-                          className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                          onClick={() => setSelectedSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <button className="size-guide-btn" onClick={() => setShowSizeModal(true)}>
-                  Size Guide →
-                </button>
-
-                <div className="trust-badges">
-                  <div className="badge">Free Shipping</div>
-                  <div className="badge">7 Day Return</div>
-                  <div className="badge">EMI Available</div>
-                </div>
-
-              <div className="purchase-actions">
-                <div className="quantity-picker">
-                  <span className="qty-label">Quantity</span>
-                  <div className="qty-controls">
-                    <button className="qty-btn" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease quantity"><Minus size={16} /></button>
-                    <span className="qty-num">{qty}</span>
-                    <button className="qty-btn" onClick={() => setQty(qty + 1)} aria-label="Increase quantity"><Plus size={16} /></button>
-                  </div>
-                </div>
-
-                <div className="buy-buttons sticky-mobile-footer">
-                  <button className="add-btn" onClick={() => handleAction('cart')}>ADD TO CART</button>
-                  <button className="buy-btn" onClick={() => handleAction('buy')}>BUY IT NOW</button>
-                </div>
-
-                <div className="extra-actions">
-                  <button 
-                    className="extra-action-btn"
-                    disabled={!isReady || wishlistLoading}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (isInWishlist(product.id)) {
-                        removeFromWishlist(product.id);
-                      } else {
-                        addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
-                      }
-                    }}
-                  >
-                    <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} color={isInWishlist(product.id) ? "#d32f2f" : "currentColor"} /> 
-                    {isInWishlist(product.id) ? "SAVED TO WISHLIST" : "ADD TO WISHLIST"}
-                  </button>
-                  <button className="extra-action-btn">
-                    <Share2 size={18} /> SHARE
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        {/* Reviews Section */}
-        <section className="reviews-section">
-          <div className="container">
-            <div className="reviews-container">
-              <div className="reviews-header-modern">
-                <div className="reviews-title-block">
-                  <h2>Customer Reviews</h2>
-                  <div className="reviews-summary-mini">
-                    <div className="summary-stars">
-                      <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                      <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                      <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                      <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                      <Star size={16} fill="#ffc107" stroke="#ffc107" />
-                    </div>
-                    <span>Based on 124 reviews</span>
-                  </div>
-                </div>
-                <button className="write-review-btn-premium" onClick={() => setShowReviewForm(!showReviewForm)}>
-                  {showReviewForm ? 'CANCEL' : 'WRITE A REVIEW'}
-                </button>
-              </div>
-
-              {showReviewForm && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="review-form-box-premium"
+                <button
+                  type="button"
+                  className="atelier-helpful-button"
+                  onClick={() => handleHelpfulClick(index)}
                 >
-                  <h3 className="review-form-title">Share Your Experience</h3>
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label>Your Rating</label>
-                      <div className="rating-stars-input-premium">
-                        <Star size={28} className="star-input-icon" />
-                        <Star size={28} className="star-input-icon" />
-                        <Star size={28} className="star-input-icon" />
-                        <Star size={28} className="star-input-icon" />
-                        <Star size={28} className="star-input-icon" />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Full Name</label>
-                      <input type="text" placeholder="Enter your name" className="premium-input" />
-                    </div>
-                    <div className="form-group full-width">
-                      <label>Review Content</label>
-                      <textarea rows={4} placeholder="What did you like or dislike?" className="premium-input"></textarea>
-                    </div>
-                    <div className="form-group full-width">
-                      <label>Add a Photo</label>
-                      <div className="premium-upload-zone">
-                        <ImageIcon size={32} />
-                        <span>Tap to upload a photo of your purchase</span>
-                      </div>
-                    </div>
-                  </div>
-                  <button className="submit-review-btn-premium">POST REVIEW</button>
-                </motion.div>
-              )}
-
-              <div className="reviews-list-empty">
-                <div className="empty-state-icon">
-                  <Star size={48} strokeWidth={1} />
-                </div>
-                <h3>No reviews yet</h3>
-                <p>Be the first to share your thoughts about this product!</p>
-                
-                <div className="review-perks">
-                  <div className="perk-item">
-                    <MessageCircle size={18} />
-                    <span>Verified Purchase</span>
-                  </div>
-                  <div className="perk-item">
-                    <HelpCircle size={18} />
-                    <span>Helpful Community</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  <ThumbsUp size={14} />
+                  Helpful ({review.helpful})
+                </button>
+              </article>
+            ))}
           </div>
-        </section>
 
-        {/* Recommended Products */}
-        <section className="recommended-section">
-          <div className="container">
-            <h2>Recommended For You</h2>
-            <div className="rec-grid">
-{dynamicRecs.map((prod: ProductType) => (
-                <Link href={`/vesthi-shirt/product/${prod.id}`} key={prod.id} className="rec-card">
-                    <div className="rec-img-box" style={{ position: 'relative', width: '100%', height: '200px' }}>
-                      <Image src={prod.img} alt={prod.name} fill className="rec-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 50vw, 200px" />
-                  </div>
-                  <div className="rec-info">
-                    <h3 className="rec-name">{prod.name}</h3>
-                    <div className="rec-price">₹{prod.price}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="atelier-review-footer">
+            <button
+              type="button"
+              className="atelier-inline-link atelier-inline-button"
+              onClick={() => toast('More reviews coming soon.')}
+            >
+              View All {reviewCount} Reviews
+            </button>
           </div>
         </section>
       </main>
 
-      <Footer />
+      <div className="atelier-sticky-footer">
+        <div className="atelier-sticky-price">
+          <strong>₹{formatCurrency(product.price)}</strong>
+          <span>Size {selectedSize}</span>
+        </div>
+        <button type="button" className="atelier-sticky-wishlist" onClick={toggleWishlist} aria-label="Toggle wishlist">
+          <Heart size={18} fill={wishlistActive ? 'currentColor' : 'none'} />
+        </button>
+        <button type="button" className="atelier-sticky-cta" onClick={addCurrentProductToCart}>
+          Add to Bag
+        </button>
+      </div>
+
+      {showSizeChart && (
+        <div className="atelier-modal-backdrop" role="presentation" onClick={() => setShowSizeChart(false)}>
+          <div
+            className="atelier-size-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Size chart"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="atelier-modal-header">
+              <h2>Vesthi Set Size Chart</h2>
+              <button type="button" className="atelier-icon-button" onClick={() => setShowSizeChart(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="atelier-table-wrap">
+              <table className="atelier-size-table">
+                <thead>
+                  <tr>
+                    <th>Size</th>
+                    <th>Chest</th>
+                    <th>Shoulder</th>
+                    <th>Length</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>S</td>
+                    <td>38"</td>
+                    <td>16.5"</td>
+                    <td>28"</td>
+                  </tr>
+                  <tr>
+                    <td>M</td>
+                    <td>40"</td>
+                    <td>17"</td>
+                    <td>29"</td>
+                  </tr>
+                  <tr>
+                    <td>L</td>
+                    <td>42"</td>
+                    <td>17.5"</td>
+                    <td>30"</td>
+                  </tr>
+                  <tr>
+                    <td>XL</td>
+                    <td>44"</td>
+                    <td>18"</td>
+                    <td>31"</td>
+                  </tr>
+                  <tr>
+                    <td>XXL</td>
+                    <td>46"</td>
+                    <td>18.5"</td>
+                    <td>31.5"</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

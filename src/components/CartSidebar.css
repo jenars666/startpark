@@ -193,6 +193,11 @@
   background: #333;
 }
 
+.checkout-btn-main:disabled {
+  background: #666;
+  cursor: wait;
+}
+
 .empty-cart-msg {
   height: 100%;
   display: flex;

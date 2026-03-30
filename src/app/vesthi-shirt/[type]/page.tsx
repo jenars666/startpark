@@ -53,7 +53,7 @@ export default function VesthiTypePage() {
 
       <main>
         {/* Hero Section - Adapted from Casual */}
-        <section className="vesthi-type-hero">
+        <section className={`vesthi-type-hero ${type}-hero`}>
           <div className="vesthi-type-hero-content">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
@@ -79,9 +79,9 @@ export default function VesthiTypePage() {
               Explore our premium {type} collection of traditional vesthi and matching shirts, crafted for special occasions.
             </motion.p>
           </div>
-          <div className="vesthi-type-hero-image">
-              <Image src={heroData.heroImg} alt={heroData.title} fill className="hero-bg-img" style={{ objectFit: 'cover' }} sizes="(max-width: 768px) 100vw, 50vw" />
-          </div>
+            <div className={`vesthi-type-hero-image ${type}-hero-image`}>
+              <Image src={heroData.heroImg} alt={heroData.title} fill className="hero-bg-img" style={{ objectFit: 'cover', objectPosition: 'center -10%' }} sizes="(max-width: 768px) 100vw, 50vw" />
+            </div>
         </section>
 
         {/* Collection Section with Toolbar - Flipkart Style */}
@@ -197,4 +197,3 @@ export default function VesthiTypePage() {
     </div>
   );
 }
-

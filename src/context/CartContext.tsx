@@ -12,6 +12,7 @@ interface CartContextType {
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: number | string) => void;
   updateQuantity: (id: number | string, delta: number) => void;
+  clearCart: () => void;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   totalItems: number;
@@ -141,6 +142,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   const totalItems = cartItems.reduce((acc, i) => acc + i.quantity, 0);
   const totalPrice = cartItems.reduce((acc, i) => {
     const priceStr = typeof i.price === 'string' ? i.price.replace(/,/g, '').replace(/[^0-9.]/g, '') : '0';
@@ -153,6 +158,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       addToCart,
       removeFromCart,
       updateQuantity,
+      clearCart,
       isCartOpen,
       setIsCartOpen,
       totalItems,

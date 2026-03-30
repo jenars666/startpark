@@ -15,6 +15,34 @@ export default function FormalShirtPage() {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
+
+  // Desired order by product name (from images):
+  // 1. OFFICE READY LIGHT GREY SHIRT
+  // 2. ELEGANT NAVY FORMAL SHIRT
+  // 3. STRUCTURED FORMAL BLACK SHIRT
+  // 4. SLIM FIT FORMAL BLUE SHIRT
+  // 5. CLASSIC FORMAL WHITE SHIRT
+  const desiredOrder = [
+    'OFFICE READY LIGHT GREY SHIRT',
+    'ELEGANT NAVY FORMAL SHIRT',
+    'STRUCTURED FORMAL BLACK SHIRT',
+    'SLIM FIT FORMAL BLUE SHIRT',
+    'CLASSIC FORMAL WHITE SHIRT'
+  ];
+
+  // Remove duplicates and sort by desired order
+  const uniqueFormalProducts = formalProducts.filter(
+    (product, index, self) =>
+      index === self.findIndex((p) => p.img === product.img)
+  ).sort((a, b) => {
+    const aIdx = desiredOrder.indexOf(a.name.trim().toUpperCase());
+    const bIdx = desiredOrder.indexOf(b.name.trim().toUpperCase());
+    if (aIdx === -1 && bIdx === -1) return 0;
+    if (aIdx === -1) return 1;
+    if (bIdx === -1) return -1;
+    return aIdx - bIdx;
+  });
+
   return (
     <div className="formal-page-wrapper">
       <Header />
@@ -63,7 +91,7 @@ export default function FormalShirtPage() {
 
             {/* Toolbar */}
             <div className="collection-toolbar">
-              <div className="results-count">Showing 1 - {formalProducts.length} of {formalProducts.length} products</div>
+              <div className="results-count">Showing 1 - {uniqueFormalProducts.length} of {uniqueFormalProducts.length} products</div>
               <div className="sort-filter">
                 <span className="sort-label">Sort by: 
                   <select title="Sort products">
@@ -77,7 +105,7 @@ export default function FormalShirtPage() {
             </div>
 
             <div className="product-grid">
-              {formalProducts.map((product, idx) => (
+              {uniqueFormalProducts.map((product, idx) => (
                 <Link href={`/formal-shirt/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
