@@ -1,19 +1,61 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import Header from '../../components/Header';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import ProductSearch from '../../components/ProductSearch';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Share2, Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { casualProducts } from './casual-products';
-import { useCart } from '../../context/CartContext';
-import { useWishlist } from '../../context/WishlistContext';
+import { useProducts } from '../../hooks/useProducts';
+import { useGuestGuard } from '../../hooks/useGuestGuard';
+import { useCart } from '../../context/CartContextFirebase';
+import { useWishlist } from '../../context/WishlistContextFirebase';
+import { analytics } from '../../utils/analytics';
 import './casual.css';
 
+type CasualFilters = {
+  priceRange: [number, number];
+  sortBy: 'price-low' | 'price-high' | 'newest' | 'popular';
+  color: string;
+};
+
 export default function CasualShirtPage() {
+  const { guardAddToCart, guardWishlist } = useGuestGuard();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilters, setActiveFilters] = useState<CasualFilters>({
+    priceRange: [0, 10000],
+    sortBy: 'popular',
+    color: 'all',
+  });
+
+  const { products: casualProducts, loading } = useProducts('Casual Shirt');
+
+  const filteredProducts = useMemo(() => {
+    let result = [...casualProducts];
+
+    if (searchQuery) {
+      result = result.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    result = result.filter(p => {
+      const price = parseFloat(p.price.toString().replace(',', ''));
+      const priceMatch = price >= activeFilters.priceRange[0] && price <= activeFilters.priceRange[1];
+      const colorMatch = activeFilters.color === 'all' || p.color === activeFilters.color;
+      return priceMatch && colorMatch;
+    });
+
+    if (activeFilters.sortBy === 'price-low') {
+      result.sort((a, b) => parseFloat(a.price.toString().replace(',', '')) - parseFloat(b.price.toString().replace(',', '')));
+    } else if (activeFilters.sortBy === 'price-high') {
+      result.sort((a, b) => parseFloat(b.price.toString().replace(',', '')) - parseFloat(a.price.toString().replace(',', '')));
+    }
+
+    return result;
+  }, [searchQuery, activeFilters]);
 
   return (
     <div className="casual-page-wrapper">
@@ -31,7 +73,7 @@ export default function CasualShirtPage() {
             >
               Everyday Collection
             </motion.span>
-  <motion.h1
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -53,7 +95,7 @@ export default function CasualShirtPage() {
           </div>
         </section>
 
-    {/* Collection Section with Toolbar - Flipkart Style */}
+        {/* Collection Section with Toolbar - Flipkart Style */}
         <section className="casual-collection">
           <div className="container">
             <div className="collection-header">
@@ -61,24 +103,65 @@ export default function CasualShirtPage() {
               <p className="collection-subtitle">Explore our curated selection of casual shirts</p>
             </div>
 
+            {/* Search & Filters */}
+            <ProductSearch
+              onSearch={(q) => { setSearchQuery(q); analytics.search(q); }}
+              onFilter={(filters) =>
+                setActiveFilters((current) => ({
+                  ...current,
+                  ...filters,
+                }))
+              }
+            />
+
             {/* Toolbar */}
             <div className="collection-toolbar">
-              <div className="results-count">Showing 1 - {casualProducts.length} of {casualProducts.length} products</div>
+              <div className="results-count">Showing {filteredProducts.length} of {casualProducts.length} products</div>
               <div className="sort-filter">
                 <span className="sort-label">Sort by: 
-                  <select title="Sort products">
-                    <option>Recommended</option>
-                    <option>Price Low-High</option>
-                    <option>Price High-Low</option>
+                  <select 
+                    title="Sort products"
+                    value={activeFilters.sortBy}
+                    onChange={(e) =>
+                      setActiveFilters({
+                        ...activeFilters,
+                        sortBy: e.target.value as CasualFilters['sortBy'],
+                      })
+                    }
+                  >
+                    <option value="popular">Recommended</option>
+                    <option value="price-low">Price Low-High</option>
+                    <option value="price-high">Price High-Low</option>
                   </select>
                 </span>
-                <span className="filter-label">Filter: All Colors</span>
+                <span className="filter-label">Filter: 
+                  <select 
+                    title="Filter by color"
+                    value={activeFilters.color}
+                    onChange={(e) => setActiveFilters({ ...activeFilters, color: e.target.value })}
+                  >
+                    <option value="all">All Colors</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Navy">Navy</option>
+                    <option value="Grey">Grey</option>
+                    <option value="Beige">Beige</option>
+                    <option value="Brown">Brown</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Multi">Multi</option>
+                  </select>
+                </span>
               </div>
             </div>
 
             <div className="product-grid">
-              {casualProducts.map((product, idx) => (
-                <Link href={`/casual-shirt/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+              {filteredProducts.length === 0 ? (
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+                  No products found matching your search.
+                </div>
+              ) : filteredProducts.map((product, idx) => (
+                <Link href={`/casual-shirt/product/${product.id}`} key={product.id} className="product-card-link">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -98,10 +181,17 @@ export default function CasualShirtPage() {
                         <button 
                           className="c-action-btn" 
                           title="Add to Cart"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 };
+                            if (!guardAddToCart(item)) return;
+                            await addToCart(item);
+                            analytics.addToCart(
+                              product.id,
+                              product.name,
+                              parseFloat(product.price.toString().replace(',', ''))
+                            );
                           }}
                         >
                           <ShoppingCart size={18} />
@@ -109,13 +199,15 @@ export default function CasualShirtPage() {
                         <button 
                           className="c-action-btn" 
                           title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img };
                             if (isInWishlist(product.id)) {
-                              removeFromWishlist(product.id);
+                              await removeFromWishlist(product.id);
                             } else {
-                              addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
+                              if (!guardWishlist(item)) return;
+                              await addToWishlist(item);
                             }
                           }}
                         >
@@ -164,4 +256,3 @@ export default function CasualShirtPage() {
     </div>
   );
 }
-

@@ -20,8 +20,11 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { casualProducts } from '../../casual-products';
-import { useCart } from '../../../../context/CartContext';
-import { useWishlist } from '../../../../context/WishlistContext';
+import { useCart } from '../../../../context/CartContextFirebase';
+import { useGuestGuard } from '../../../../hooks/useGuestGuard';
+import { useWishlist } from '../../../../context/WishlistContextFirebase';
+import { useProductById } from '../../../../hooks/useProductById';
+import { Product } from '../../../../types/product';
 import './product-detail.css';
 
 const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'] as const;
@@ -68,8 +71,10 @@ function formatCurrency(value: string | number) {
   return new Intl.NumberFormat('en-IN').format(parsePrice(value));
 }
 
-function getDiscount(product: { price: string; oldPrice: string; discount?: number }) {
+function getDiscount(product: { price: string; oldPrice?: string; discount?: number }) {
   if (product.discount) return product.discount;
+
+  if (!product.oldPrice) return 0;
 
   const current = parsePrice(product.price);
   const old = parsePrice(product.oldPrice);
@@ -95,33 +100,76 @@ function renderStars(rating: number, className?: string) {
 
 export default function CasualProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
-  const productId = Number(unwrappedParams.id);
-  const product = casualProducts.find((item) => item.id === productId) || casualProducts[0];
+  const routeProductId = unwrappedParams.id;
+  const numericProductId = Number(routeProductId);
+  const isNumericId = !Number.isNaN(numericProductId) && String(numericProductId) === routeProductId;
+  const staticProduct = isNumericId
+    ? casualProducts.find((item) => String(item.id) === routeProductId) || casualProducts[0]
+    : null;
+  const { product: firestoreProduct, loading: loadingFirestoreProduct } = useProductById(
+    isNumericId ? null : routeProductId
+  );
+
+  const product = firestoreProduct || staticProduct;
+
+  if (!isNumericId && loadingFirestoreProduct && !firestoreProduct) {
+    return (
+      <div className="atelier-product-page">
+        <main className="atelier-detail-main">
+          <section className="atelier-summary-card">
+            <h1 className="atelier-product-title">Loading product...</h1>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="atelier-product-page">
+        <main className="atelier-detail-main">
+          <section className="atelier-summary-card">
+            <h1 className="atelier-product-title">Product not found.</h1>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return <CasualProductDetailView key={product.id} product={product} />;
 }
 
-function CasualProductDetailView({ product }: { product: (typeof casualProducts)[number] }) {
+function CasualProductDetailView({ product }: { product: Product }) {
   const router = useRouter();
-  const { addToCart, totalItems } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { totalItems, addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { guardAddToCart, guardBuyNow, guardWishlist } = useGuestGuard();
   const discount = getDiscount(product);
+  const productPath = `/casual-shirt/product/${product.id}`;
+
+  const productPool = useMemo(() => {
+    if (casualProducts.some((item) => String(item.id) === String(product.id))) {
+      return casualProducts;
+    }
+
+    return [product, ...casualProducts];
+  }, [product]);
 
   const galleryImages = useMemo(() => {
     const pool = [
       product.img,
-      ...casualProducts
+      ...productPool
         .filter((item) => item.id !== product.id)
         .map((item) => item.img),
     ];
 
     return Array.from(new Set(pool)).slice(0, 3);
-  }, [product.id, product.img]);
+  }, [product.id, product.img, productPool]);
 
   const relatedProducts = useMemo(() => {
     const seen = new Set<string>([product.img]);
 
-    return casualProducts
+    return productPool
       .filter((item) => item.id !== product.id)
       .filter((item) => {
         if (seen.has(item.img)) return false;
@@ -129,7 +177,7 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
         return true;
       })
       .slice(0, 3);
-  }, [product.id, product.img]);
+  }, [product.id, product.img, productPool]);
 
   const featureItems = useMemo(
     () => [
@@ -200,19 +248,30 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
     router.push('/casual-shirt');
   };
 
-  const addCurrentProductToCart = () => {
-    addToCart({
+  const addCurrentProductToCart = async () => {
+    const item = {
       id: `${product.id}-${selectedSize}`,
       name: `${product.name} (${selectedSize})`,
       price: product.price,
       img: product.img,
       quantity: 1,
-    });
+    };
+
+    if (!guardAddToCart(item)) return;
+    await addToCart(item);
   };
 
-  const handleBuyNow = () => {
-    addCurrentProductToCart();
-    toast.success('Added to bag. Continue checkout from cart.');
+  const handleBuyNow = async () => {
+    const item = {
+      id: `${product.id}-${selectedSize}`,
+      name: `${product.name} (${selectedSize})`,
+      price: product.price,
+      img: product.img,
+      quantity: 1,
+    };
+    if (!guardBuyNow(item)) return;
+    await addToCart(item);
+    router.push('/checkout');
   };
 
   const handleShare = async () => {
@@ -235,17 +294,20 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
     }
   };
 
-  const toggleWishlist = () => {
+  const toggleWishlist = async () => {
+    const item = { 
+      id: product.id, 
+      name: product.name, 
+      price: product.price, 
+      img: product.img 
+    };
+    
     if (wishlistActive) {
-      removeFromWishlist(product.id);
-      return;
+      await removeFromWishlist(product.id);
+    } else {
+      if (!guardWishlist(item)) return;
+      await addToWishlist(item);
     }
-    addToWishlist({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      img: product.img,
-    });
   };
 
   const handleHelpfulClick = (index: number) => {
@@ -378,6 +440,9 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
               <span>{reviewCount}</span>
             </div>
           </div>
+        {product.showStockNote && (
+          <p className="atelier-stock-note">ONLY 2 LEFT AT THIS PRICE</p>
+        )}
         </section>
 
         <section className="atelier-summary-card">
@@ -391,8 +456,8 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
 
           <div className="atelier-price-row">
             <span className="atelier-current-price">₹{formatCurrency(product.price)}</span>
-            <span className="atelier-old-price">₹{formatCurrency(product.oldPrice)}</span>
-            <span className="atelier-discount">({discount}% OFF)</span>
+            {product.oldPrice && <span className="atelier-old-price">₹{formatCurrency(product.oldPrice)}</span>}
+            {discount > 0 && <span className="atelier-discount">({discount}% OFF)</span>}
           </div>
 
           <p className="atelier-tax-note">inclusive of all taxes</p>
@@ -440,15 +505,12 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
 
           <div className="atelier-size-grid">
             {ALL_SIZES.map((size) => {
-              const unavailable = !(product.sizes || []).includes(size);
-
               return (
                 <button
                   type="button"
                   key={size}
                   className={`atelier-size-chip ${selectedSize === size ? 'is-selected' : ''}`}
                   onClick={() => setSelectedSize(size)}
-                  disabled={unavailable}
                 >
                   {size}
                 </button>
@@ -456,7 +518,6 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
             })}
           </div>
 
-          <p className="atelier-stock-note">ONLY 2 LEFT AT THIS PRICE</p>
         </section>
 
         <section className="atelier-details-panel">
@@ -784,4 +845,3 @@ function CasualProductDetailView({ product }: { product: (typeof casualProducts)
     </div>
   );
 }
-

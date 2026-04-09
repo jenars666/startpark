@@ -7,13 +7,15 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Share2, Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { formalProducts } from '../formal-products';
-import { useCart } from '../../../context/CartContext';
-import { useWishlist } from '../../../context/WishlistContext';
+import { useGuestGuard } from '../../../hooks/useGuestGuard';
+import { useCart } from '../../../context/CartContextFirebase';
+import { useWishlist } from '../../../context/WishlistContextFirebase';
 import '../formal.css';
 
 export default function FormalProductListPage() {
+  const { guardAddToCart, guardWishlist } = useGuestGuard();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   return (
     <div className="formal-page-wrapper">
@@ -27,9 +29,7 @@ export default function FormalProductListPage() {
             <motion.h1 className="hero-title">
               Formal Shirts <br /><span>Collection</span>
             </motion.h1>
-            <motion.p className="hero-desc">
-              Complete collection of formal shirts available.
-            </motion.p>
+            <motion.p className="hero-desc">Complete collection of formal shirts available.</motion.p>
           </div>
           <div className="formal-hero-image">
             <div className="image-overlay" />
@@ -46,10 +46,8 @@ export default function FormalProductListPage() {
             <div className="collection-toolbar">
               <div className="results-count">Showing 1 - {formalProducts.length} of {formalProducts.length} products</div>
               <div className="sort-filter">
-                <span className="sort-label">Sort by: 
-                  <select>
-                    <option>Recommended</option>
-                  </select>
+                <span className="sort-label">Sort by:
+                  <select title="Sort products"><option>Recommended</option></select>
                 </span>
               </div>
             </div>
@@ -62,11 +60,23 @@ export default function FormalProductListPage() {
                       {product.tag && <span className="f-tag">{product.tag}</span>}
                       <img src={product.img} alt={product.name} className="f-product-image" />
                       <div className="f-hover-actions">
-                        <button className="f-action-btn" title="Add to Cart" onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 }); }}>
+                        <button className="f-action-btn" title="Add to Cart"
+                          onClick={async (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 };
+                            if (!guardAddToCart(item)) return;
+                            await addToCart(item);
+                          }}>
                           <ShoppingCart size={18} />
                         </button>
-                        <button className="f-action-btn" title="Wishlist" onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (isInWishlist(product.id)) removeFromWishlist(product.id); else addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img }); }}>
-                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} />
+                        <button className="f-action-btn" title="Wishlist"
+                          onClick={async (e) => {
+                            e.preventDefault(); e.stopPropagation();
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+                            if (isInWishlist(product.id)) { await removeFromWishlist(product.id); }
+                            else { if (!guardWishlist(item)) return; await addToWishlist(item); }
+                          }}>
+                          <Heart size={18} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
                         </button>
                         <button className="f-action-btn" title="Share" onClick={(e) => e.preventDefault()}>
                           <Share2 size={18} />
@@ -79,9 +89,7 @@ export default function FormalProductListPage() {
                         <span className="f-old-price">₹{product.oldPrice}</span>
                         <span className="f-new-price">₹{product.price}</span>
                       </div>
-                      <button className="f-enquire-btn">
-                        VIEW DETAILS <ArrowRight size={14} />
-                      </button>
+                      <button className="f-enquire-btn">VIEW DETAILS <ArrowRight size={14} /></button>
                     </div>
                   </motion.div>
                 </Link>

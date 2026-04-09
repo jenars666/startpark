@@ -1,148 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useCart } from '../context/CartContext';
-import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useCart } from '../context/CartContextFirebase';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
-import {
-  loadRazorpayCheckoutScript,
-  type RazorpayFailureResponse,
-  type RazorpaySuccessResponse,
-} from '../lib/razorpay-client';
+import { formatCurrency, parsePrice } from '../lib/customerStore';
 import './CartSidebar.css';
 
 export default function CartSidebar() {
+  const router = useRouter();
+  const { user } = useFirebaseAuth();
   const {
     cartItems,
-    isCartOpen,
-    setIsCartOpen,
-    removeFromCart,
-    updateQuantity,
     clearCart,
+    isCartOpen,
+    removeFromCart,
+    setIsCartOpen,
     totalItems,
     totalPrice,
+    updateQuantity,
   } = useCart();
-  const { user } = useFirebaseAuth();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleCheckout = async () => {
-    if (cartItems.length === 0 || isCheckingOut) {
-      return;
+  const handleUpdateQuantity = async (id: number | string, delta: number) => {
+    const item = cartItems.find(item => String(item.id) === String(id));
+    if (item) {
+      await updateQuantity(id, item.quantity + delta);
     }
+  };
 
-    setIsCheckingOut(true);
+  const handleRemoveItem = async (id: number | string) => {
+    await removeFromCart(id);
+  };
 
-    try {
-      const scriptLoaded = await loadRazorpayCheckoutScript();
+  const handleClearCart = async () => {
+    await clearCart();
+  };
 
-      if (!scriptLoaded || !window.Razorpay) {
-        toast.error('Unable to load checkout right now.');
-        setIsCheckingOut(false);
-        return;
-      }
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    router.push(user ? '/checkout' : '/login?redirect=/checkout');
+  };
 
-      const orderResponse = await fetch('/api/payments/razorpay/order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: cartItems.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-          })),
-        }),
-      });
-
-      const orderPayload = await orderResponse.json();
-
-      if (!orderResponse.ok) {
-        toast.error(orderPayload?.error || 'Unable to start checkout.');
-        setIsCheckingOut(false);
-        return;
-      }
-
-      const verifySuccessfulPayment = async (paymentResponse: RazorpaySuccessResponse) => {
-        const verifyResponse = await fetch('/api/payments/razorpay/verify', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            orderId: orderPayload.order.id,
-            ...paymentResponse,
-          }),
-        });
-
-        const verificationPayload = await verifyResponse.json();
-
-        if (!verifyResponse.ok || !verificationPayload?.verified) {
-          throw new Error(verificationPayload?.error || 'Payment verification failed.');
-        }
-
-        clearCart();
-        setIsCartOpen(false);
-        toast.success('Payment successful. Your order is confirmed.');
-      };
-
-      const checkout = new window.Razorpay({
-        key: orderPayload.keyId,
-        amount: orderPayload.order.amount,
-        currency: orderPayload.order.currency,
-        name: 'Star Mens Park',
-        description: `Cart checkout for ${totalItems} item${totalItems > 1 ? 's' : ''}`,
-        order_id: orderPayload.order.id,
-        handler: async (paymentResponse) => {
-          try {
-            await verifySuccessfulPayment(paymentResponse);
-          } catch (error) {
-            const message =
-              error instanceof Error ? error.message : 'Payment completed but verification failed.';
-            toast.error(message);
-          } finally {
-            setIsCheckingOut(false);
-          }
-        },
-        prefill: {
-          name: user?.displayName ?? undefined,
-          email: user?.email ?? undefined,
-          contact: user?.phoneNumber ?? undefined,
-        },
-        notes: {
-          cart_items: String(totalItems),
-        },
-        theme: {
-          color: '#111111',
-        },
-        modal: {
-          ondismiss: () => {
-            setIsCheckingOut(false);
-          },
-        },
-      });
-
-      checkout.on('payment.failed', (paymentError: RazorpayFailureResponse) => {
-        toast.error(paymentError.error?.description || 'Payment was not completed.');
-        setIsCheckingOut(false);
-      });
-
-      checkout.open();
-    } catch (error) {
-      console.error('Checkout start failed:', error);
-      const message = error instanceof Error ? error.message : 'Unable to start checkout.';
-      toast.error(message);
-      setIsCheckingOut(false);
-    }
+  const handleViewCart = () => {
+    setIsCartOpen(false);
+    router.push('/cart');
   };
 
   return (
     <AnimatePresence>
-      {isCartOpen && (
+      {isCartOpen ? (
         <>
           <motion.div
             initial={{ opacity: 0 }}
@@ -189,24 +98,34 @@ export default function CartSidebar() {
                         className="cart-item-img"
                         style={{ position: 'relative', width: '80px', height: '100px' }}
                       >
-                        <Image src={item.img} alt={item.name} fill style={{ objectFit: 'cover' }} sizes="80px" />
+                        <Image
+                          src={item.img}
+                          alt={item.name}
+                          fill
+                          sizes="80px"
+                          style={{ objectFit: 'cover' }}
+                        />
                       </div>
+
                       <div className="cart-item-info">
                         <h3>{item.name}</h3>
-                        <div className="cart-item-price">₹{item.price}</div>
+                        <div className="cart-item-price">{formatCurrency(parsePrice(item.price))}</div>
                         <div className="cart-item-controls">
                           <div className="cart-qty-box">
-                            <button onClick={() => updateQuantity(item.id, -1)}>
+                            <button onClick={() => handleUpdateQuantity(item.id, -1)}>
                               <Minus size={14} />
                             </button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, 1)}>
+                            <button onClick={() => handleUpdateQuantity(item.id, 1)}>
                               <Plus size={14} />
                             </button>
                           </div>
                           <button
                             className="remove-item-btn"
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => {
+                              handleRemoveItem(item.id);
+                              toast.success('Removed from cart.');
+                            }}
                             aria-label="Remove item"
                           >
                             <Trash2 size={16} />
@@ -219,25 +138,39 @@ export default function CartSidebar() {
               )}
             </div>
 
-            {cartItems.length > 0 && (
+            {cartItems.length > 0 ? (
               <div className="cart-footer-summary">
                 <div className="cart-subtotal">
-                  <span>Subtotal</span>
-                  <span className="total-val">₹{totalPrice.toLocaleString('en-IN')}</span>
+                  <span>
+                    Subtotal ({totalItems} item{totalItems > 1 ? 's' : ''})
+                  </span>
+                  <span className="total-val">{formatCurrency(totalPrice)}</span>
                 </div>
-                <p className="shipping-note">Shipping and taxes calculated at checkout.</p>
+                <p className="shipping-note">
+                  {user
+                    ? 'Your saved cart is linked to your account.'
+                    : 'Sign in at checkout to save this cart to your account.'}
+                </p>
+                <button className="checkout-btn-main" onClick={handleCheckout}>
+                  {user ? 'CONTINUE TO CHECKOUT' : 'SIGN IN TO CHECKOUT'}
+                </button>
+                <button className="start-shopping-btn" onClick={handleViewCart}>
+                  VIEW FULL CART
+                </button>
                 <button
-                  className="checkout-btn-main"
-                  onClick={handleCheckout}
-                  disabled={isCheckingOut}
+                  className="start-shopping-btn"
+                  onClick={() => {
+                    handleClearCart();
+                    toast.success('Cart cleared.');
+                  }}
                 >
-                  {isCheckingOut ? 'OPENING CHECKOUT...' : 'PROCEED TO CHECKOUT'}
+                  CLEAR CART
                 </button>
               </div>
-            )}
+            ) : null}
           </motion.div>
         </>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }

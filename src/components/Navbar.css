@@ -131,6 +131,10 @@
   cursor: pointer;
 }
 
+.nav-mobile-contact {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .nav-content {
     padding: 0 1rem;
@@ -190,6 +194,20 @@
 
   .nav-offers-btn span {
     display: none;
+  }
+
+  .nav-mobile-contact {
+    display: flex;
+  }
+
+  .nav-mobile-contact a {
+    padding: 1rem 2rem;
+    width: 100%;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: #c92a2a;
+    text-decoration: none;
   }
 }
 

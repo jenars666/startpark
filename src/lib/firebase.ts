@@ -4,7 +4,12 @@ import { getStorage } from "firebase/storage";
 import type { FirebaseStorage } from "firebase/storage";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import type { Auth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentSingleTabManager,
+} from "firebase/firestore";
 import type { Firestore } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import type { Analytics } from "firebase/analytics";
@@ -30,8 +35,34 @@ const app: FirebaseApp | null = isFirebaseConfigured
 
 export const storage: FirebaseStorage | null = app ? getStorage(app) : null;
 export const auth: Auth | null = app ? getAuth(app) : null;
-export const googleProvider = app ? new GoogleAuthProvider() : null;
-export const db: Firestore | null = app ? getFirestore(app) : null;
+
+// Configure Google provider with additional settings
+export const googleProvider = app ? (() => {
+  const provider = new GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
+  return provider;
+})() : null;
+
+function createFirestoreInstance(firebaseApp: FirebaseApp) {
+  if (typeof window === "undefined") {
+    return getFirestore(firebaseApp);
+  }
+
+  try {
+    return initializeFirestore(firebaseApp, {
+      localCache: persistentLocalCache(),
+    });
+  } catch (error) {
+    console.warn("Falling back to default Firestore instance:", error);
+    return getFirestore(firebaseApp);
+  }
+}
+
+export const db: Firestore | null = app ? createFirestoreInstance(app) : null;
 
 export let analytics: Analytics | null = null;
 if (app && typeof window !== "undefined") {

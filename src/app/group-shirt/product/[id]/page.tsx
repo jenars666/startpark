@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import Header from '../../../../components/Header';
 import Navbar from '../../../../components/Navbar';
 import Footer from '../../../../components/Footer';
@@ -11,14 +11,25 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import '../../../vesthi-shirt/product.css';
-import { useFirebaseAuth } from '../../../../hooks/useFirebaseAuth';
-import { useCart } from '../../../../context/CartContext';
-import { useWishlist } from '../../../../context/WishlistContext';
+import { useGuestGuard } from '../../../../hooks/useGuestGuard';
+import { useCart } from '../../../../context/CartContextFirebase';
+import { useWishlist } from '../../../../context/WishlistContextFirebase';
 
 // Consolidated data from all group shirt pages
-const allGroupProducts: Record<string, any> = {
+type GroupProduct = {
+  id: string;
+  name: string;
+  price: string;
+  oldPrice: string;
+  img: string;
+  material: string;
+  occasion: string;
+  desc: string;
+};
+
+const allGroupProducts: Record<string, GroupProduct> = {
   g1: { id: 'g1', name: 'Family Matching Silk Group Shirts', price: '4599', oldPrice: '5200', img: '/images/groupshirt.png', material: 'Silk blend', occasion: 'Family Gatherings', desc: 'Elegant silk blend group shirts for your entire family. Celebrate your events in unified joy and style.' },
   g2: { id: 'g2', name: 'Corporate Team Cotton Shirts', price: '12250', oldPrice: '15999', img: '/images/group2.png', material: 'Pure Premium Cotton', occasion: 'Office & Events', desc: 'Bulk sets of professional team wear crafted for ultimate comfort over long hours.' },
   g3: { id: 'g3', name: 'Wedding Groomsmen Traditional Set', price: '8500', oldPrice: '10500', img: '/images/groupshirt.png', material: 'Traditional Weave', occasion: 'Weddings', desc: 'Stand out together. Make the groom\'s squad look sharp and coordinated.' },
@@ -33,26 +44,29 @@ const allGroupProducts: Record<string, any> = {
 
 export default function GroupProductDetail() {
   const params = useParams();
-  const router = useRouter();
   const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
   const productId = decodeURIComponent(rawId || '');
   
   const product = allGroupProducts[productId];
   
-  const { user } = useFirebaseAuth();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { guardAddToCart, guardBuyNow, guardWishlist } = useGuestGuard();
 
   const [qty, setQty] = useState(1);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [dynamicRecs, setDynamicRecs] = useState<any[]>([]);
+  const dynamicRecs = useMemo(() => {
+    const otherProducts = Object.values(allGroupProducts).filter((item) => item.id !== productId);
+    if (otherProducts.length === 0) {
+      return [];
+    }
 
-  useEffect(() => {
-    // Generate some recommended products
-    const otherProducts = Object.values(allGroupProducts).filter(p => p.id !== productId);
-    // Shuffle and pick 5
-    const shuffled = [...otherProducts].sort(() => 0.5 - Math.random());
-    setDynamicRecs(shuffled.slice(0, 5));
+    const startIndex =
+      productId
+        .split('')
+        .reduce((total, character) => total + character.charCodeAt(0), 0) %
+      otherProducts.length;
+
+    return [...otherProducts.slice(startIndex), ...otherProducts.slice(0, startIndex)].slice(0, 5);
   }, [productId]);
 
   if (!product) {
@@ -72,38 +86,15 @@ export default function GroupProductDetail() {
     );
   }
 
-  const pNum = parseInt(product.price.replace(/,/g, ''));
-  const opNum = parseInt(product.oldPrice.replace(/,/g, ''));
-  const discount = Math.round(((opNum - pNum) / opNum) * 100);
-
-  const handleAction = (action: 'cart' | 'buy') => {
-    if (!user) {
-      if (action === 'buy') {
-        router.push(`/login?redirect=/checkout`);
-      } else {
-        router.push(`/login?redirect=/group-shirt/product/${productId}`);
-      }
-      return;
-    }
-
+  const handleAction = async (action: 'cart' | 'buy') => {
+    const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: qty };
     if (action === 'cart') {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        img: product.img,
-        quantity: qty
-      });
-      alert('Item added to cart!');
+      if (!guardAddToCart(item)) return;
+      await addToCart(item);
     } else {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        img: product.img,
-        quantity: qty
-      });
-      router.push('/checkout');
+      if (!guardBuyNow(item)) return;
+      await addToCart(item);
+      window.location.href = '/checkout';
     }
   };
 
@@ -180,12 +171,10 @@ export default function GroupProductDetail() {
                 <div className="secondary-actions">
                   <button 
                     className={`action-btn ${isInWishlist(product.id) ? 'active' : ''}`}
-                    onClick={() => {
-                      if (isInWishlist(product.id)) {
-                        removeFromWishlist(product.id);
-                      } else {
-                        addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
-                      }
+                    onClick={async () => {
+                      const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+                      if (isInWishlist(product.id)) { await removeFromWishlist(product.id); }
+                      else { if (!guardWishlist(item)) return; await addToWishlist(item); }
                     }}
                   >
                     <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} /> 

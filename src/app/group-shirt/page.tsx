@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Header from '../../components/Header';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { db } from '../../lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 import './group-shirt.css';
 
 export default function GroupShirtPage() {
@@ -31,10 +33,30 @@ export default function GroupShirtPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleWhatsAppEnquiry = () => {
+  const handleWhatsAppEnquiry = async () => {
     const { name, phone, eventType, pieces, colour, notes } = formData;
     
-    // Construct the WhatsApp message
+    // 1. Save to Admin database
+    if (db) {
+      try {
+        await addDoc(collection(db, 'groupOrders'), {
+          event: eventType,
+          customerName: name,
+          phone,
+          count: parseInt(pieces) || 0,
+          color: colour,
+          notes,
+          sizes: selectedSizes,
+          status: 'pending',
+          revenue: 0,
+          createdAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error('Failed to save group order to DB:', err);
+      }
+    }
+
+    // 2. Construct the WhatsApp message
     let message = `*New Group Shirt Enquiry* \n\n`;
     message += `*Name:* ${name || 'N/A'}\n`;
     message += `*Phone:* ${phone || 'N/A'}\n`;

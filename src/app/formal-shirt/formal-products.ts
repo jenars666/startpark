@@ -10,6 +10,7 @@ export interface FormalProduct {
   reviews: number;
   sizes: string[];
   discount?: number;
+  category?: string;
 }
 
 export const formalProducts: FormalProduct[] = [
@@ -24,7 +25,8 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.5,
     reviews: 127,
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    discount: 27
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 52,
@@ -37,7 +39,8 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.7,
     reviews: 89,
     sizes: ['S', 'M', 'L', 'XL'],
-    discount: 20
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 53,
@@ -50,7 +53,8 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.8,
     reviews: 203,
     sizes: ['M', 'L', 'XL', 'XXL'],
-    discount: 28
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 54,
@@ -62,7 +66,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'Grey',
     rating: 4.3,
     reviews: 67,
-    sizes: ['S', 'M', 'L', 'XL']
+    sizes: ['S', 'M', 'L', 'XL'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 55,
@@ -74,9 +80,10 @@ export const formalProducts: FormalProduct[] = [
     color: 'Black',
     rating: 4.6,
     reviews: 156,
-    sizes: ['M', 'L', 'XL', 'XXL']
+    sizes: ['M', 'L', 'XL', 'XXL'],
+    discount: 28,
+    category: 'Shirt',
   },
-  // Repeat pattern with varied names, same 5 images cycled
   {
     id: 56,
     name: 'Crisp White Dress Shirt',
@@ -87,7 +94,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'White',
     rating: 4.4,
     reviews: 94,
-    sizes: ['S', 'M', 'L', 'XL']
+    sizes: ['S', 'M', 'L', 'XL'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 57,
@@ -100,7 +109,8 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.9,
     reviews: 234,
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    discount: 27
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 58,
@@ -112,7 +122,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'Charcoal',
     rating: 4.2,
     reviews: 112,
-    sizes: ['L', 'XL']
+    sizes: ['L', 'XL'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 59,
@@ -124,7 +136,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'Silver Grey',
     rating: 4.5,
     reviews: 78,
-    sizes: ['S', 'M', 'L']
+    sizes: ['S', 'M', 'L'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 60,
@@ -136,7 +150,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'Black',
     rating: 4.9,
     reviews: 345,
-    sizes: ['M', 'L', 'XL']
+    sizes: ['M', 'L', 'XL'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 61,
@@ -148,7 +164,9 @@ export const formalProducts: FormalProduct[] = [
     color: 'White',
     rating: 4.6,
     reviews: 189,
-    sizes: ['S', 'M', 'L', 'XL', 'XXL']
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 62,
@@ -161,7 +179,8 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.4,
     reviews: 121,
     sizes: ['M', 'L', 'XL', 'XXL'],
-    discount: 28
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 63,
@@ -174,20 +193,22 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.5,
     reviews: 98,
     sizes: ['S', 'M', 'L', 'XL'],
-    discount: 28
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 64,
     name: 'Formal Light Blue Shirt',
     price: '1,380',
     oldPrice: '1,899',
-    tag: 'Premium',
     img: '/images/formal paline/WhatsApp Image 2026-03-29 at 9.43.23 PM (1).jpeg',
+    tag: 'Premium',
     color: 'LightBlue',
     rating: 4.3,
     reviews: 74,
     sizes: ['S', 'M', 'L', 'XL'],
-    discount: 20
+    discount: 28,
+    category: 'Shirt',
   },
   {
     id: 65,
@@ -200,6 +221,7 @@ export const formalProducts: FormalProduct[] = [
     rating: 4.7,
     reviews: 166,
     sizes: ['M', 'L', 'XL', 'XXL'],
-    discount: 28
-  }
+    discount: 28,
+    category: 'Shirt',
+  },
 ];

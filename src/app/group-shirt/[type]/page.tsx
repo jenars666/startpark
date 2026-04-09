@@ -8,10 +8,26 @@ import { ShoppingCart, Heart, Share2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import '../group-shirt.css';
-import { useCart } from '../../../context/CartContext';
-import { useWishlist } from '../../../context/WishlistContext';
+import { useGuestGuard } from '../../../hooks/useGuestGuard';
+import { useCart } from '../../../context/CartContextFirebase';
+import { useWishlist } from '../../../context/WishlistContextFirebase';
 
-const groupCollectionData: Record<string, any> = {
+type GroupCollectionProduct = {
+  id: string;
+  name: string;
+  price: string;
+  oldPrice: string;
+  img: string;
+};
+
+type GroupCollection = {
+  title: string;
+  desc: string;
+  heroImg: string;
+  products: GroupCollectionProduct[];
+};
+
+const groupCollectionData: Record<string, GroupCollection> = {
   wedding: {
     title: 'Wedding Party',
     desc: 'Premium group shirts for groomsmen and family members. Celebrate in united elegance.',
@@ -45,11 +61,11 @@ export default function GroupTypePage() {
   const params = useParams();
   const typeStr = Array.isArray(params.type) ? params.type[0] : params.type;
   const type = typeStr?.toLowerCase() || 'wedding';
-  
   const collection = groupCollectionData[type] || groupCollectionData['wedding'];
-  
+
+  const { guardAddToCart, guardWishlist } = useGuestGuard();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   return (
     <div className="group-page-wrapper">
@@ -57,10 +73,9 @@ export default function GroupTypePage() {
       <Navbar />
 
       <main>
-        {/* Collection Hero */}
-        <section 
+        <section
           className="type-collection-hero"
-          style={{ 
+          style={{
             backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(${collection.heroImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -72,7 +87,7 @@ export default function GroupTypePage() {
             <Link href="/group-shirt" className="back-link" style={{ color: '#fff', marginBottom: '2rem', display: 'inline-flex' }}>
               <ArrowLeft size={20} /> Back to Group Shirts
             </Link>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="collection-page-title"
@@ -80,7 +95,7 @@ export default function GroupTypePage() {
             >
               {collection.title}
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -92,11 +107,10 @@ export default function GroupTypePage() {
           </div>
         </section>
 
-        {/* Collection Grid */}
         <section className="collection-grid-section">
           <div className="container">
             <div className="product-grid">
-              {collection.products.map((product: any, idx: number) => (
+              {collection.products.map((product, idx) => (
                 <Link href={`/group-shirt/product/${product.id}`} key={product.id} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -106,40 +120,33 @@ export default function GroupTypePage() {
                     className="v-product-card"
                   >
                     <div className="v-product-image-box">
-                      <div
-                        className="v-product-image"
-                        style={{ backgroundImage: `url(${product.img})` }}
-                      />
+                      <div className="v-product-image" style={{ backgroundImage: `url(${product.img})` }} />
                       <div className="v-hover-actions">
-                        <button 
-                          className="v-action-btn" 
+                        <button
+                          className="v-action-btn"
                           title="Add to Cart"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
-                            addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 };
+                            if (!guardAddToCart(item)) return;
+                            await addToCart(item);
                           }}
                         >
                           <ShoppingCart size={18} />
                         </button>
-                        <button 
-                          className="v-action-btn" 
-                          title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                          onClick={(e) => {
+                        <button
+                          className="v-action-btn"
+                          title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                          onClick={async (e) => {
                             e.preventDefault();
-                            if (isInWishlist(product.id)) {
-                              removeFromWishlist(product.id);
-                            } else {
-                              addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
-                            }
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+                            if (isInWishlist(product.id)) { await removeFromWishlist(product.id); }
+                            else { if (!guardWishlist(item)) return; await addToWishlist(item); }
                           }}
                         >
-                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} color={isInWishlist(product.id) ? "#d32f2f" : "currentColor"} />
+                          <Heart size={18} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} color={isInWishlist(product.id) ? '#d32f2f' : 'currentColor'} />
                         </button>
-                        <button 
-                          className="v-action-btn" 
-                          title="Share Product"
-                          onClick={(e) => e.preventDefault()}
-                        >
+                        <button className="v-action-btn" title="Share Product" onClick={(e) => e.preventDefault()}>
                           <Share2 size={18} />
                         </button>
                       </div>
@@ -150,12 +157,7 @@ export default function GroupTypePage() {
                         <span className="v-old-price">₹{product.oldPrice}</span>
                         <span className="v-new-price">₹{product.price}</span>
                       </div>
-                      <button 
-                        className="v-enquire-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                      >
+                      <button className="v-enquire-btn" onClick={(e) => e.preventDefault()}>
                         ENQUIRE BULK
                       </button>
                     </div>

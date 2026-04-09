@@ -9,41 +9,49 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="site-navbar">
+    <nav className="site-navbar" role="navigation" aria-label="Main navigation">
       <div className="container nav-content">
-        <button className="nav-shop-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        <button 
+          className="nav-shop-btn" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="main-menu"
+          aria-label="Toggle navigation menu"
+          suppressHydrationWarning
+        >
+          {isMobileMenuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           SHOP BY CATEGORIES
         </button>
 
-        <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>NEW ARRIVALS</a></li>
-          <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>TRENDING NOW</a></li>
-          <li><Link href="/vesthi-shirt" onClick={() => setIsMobileMenuOpen(false)}>VESTHI&SHIRT</Link></li>
-          <li><Link href="/group-shirt" onClick={() => setIsMobileMenuOpen(false)}>GROUP SHIRT</Link></li>
-          <li className="dropdown">
-            <a href="#">BOTTOMS <ChevronDown size={14} className="dropdown-arrow" /></a>
-            <ul className="dropdown-menu">
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Jeans</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Chinos</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Joggers</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Cargos</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Shorts</a></li>
+        <ul className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`} id="main-menu" role="menubar">
+          <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>NEW ARRIVALS</a></li>
+          <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>TRENDING NOW</a></li>
+          <li role="none"><Link href="/vesthi-shirt" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>VESTHI&SHIRT</Link></li>
+          <li role="none"><Link href="/group-shirt" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>GROUP SHIRT</Link></li>
+          <li className="dropdown" role="none">
+            <a href="#" role="menuitem" aria-haspopup="true" aria-expanded="false">BOTTOMS <ChevronDown size={14} className="dropdown-arrow" aria-hidden="true" /></a>
+            <ul className="dropdown-menu" role="menu" aria-label="Bottoms submenu">
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Jeans</a></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Chinos</a></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Joggers</a></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Cargos</a></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Shorts</a></li>
             </ul>
           </li>
-          <li className="dropdown">
-            <a href="#">SHIRTS <ChevronDown size={14} className="dropdown-arrow" /></a>
-            <ul className="dropdown-menu">
-              <li><Link href="/casual-shirt" onClick={() => setIsMobileMenuOpen(false)}>Casual</Link></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Formal</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Flannels</a></li>
-              <li><a href="#" onClick={() => setIsMobileMenuOpen(false)}>Polos</a></li>
+          <li className="dropdown" role="none">
+            <a href="#" role="menuitem" aria-haspopup="true" aria-expanded="false">SHIRTS <ChevronDown size={14} className="dropdown-arrow" aria-hidden="true" /></a>
+            <ul className="dropdown-menu" role="menu" aria-label="Shirts submenu">
+              <li role="none"><Link href="/casual-shirt" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Casual</Link></li>
+              <li role="none"><Link href="/formal-shirt" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Formal</Link></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Flannels</a></li>
+              <li role="none"><a href="#" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>Polos</a></li>
             </ul>
           </li>
+          <li role="none" className="nav-mobile-contact"><Link href="/contact" role="menuitem" onClick={() => setIsMobileMenuOpen(false)}>CONTACT</Link></li>
         </ul>
 
-        <button className="nav-offers-btn">
-          <Tag size={18} />
+        <button className="nav-offers-btn" aria-label="View best offers" suppressHydrationWarning>
+          <Tag size={18} aria-hidden="true" />
           BEST OFFERS
         </button>
       </div>

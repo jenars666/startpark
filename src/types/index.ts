@@ -5,6 +5,7 @@ export interface Product {
     oldPrice?: string | number;
     img: string;
     tag?: string;
+    category?: string;
 }
 
 export interface CartItem {
@@ -13,11 +14,12 @@ export interface CartItem {
   price: string | number;
   img: string;
   quantity: number;
+  category?: string;
 }
 
 export interface WishlistItem {
   id: number | string;
   name: string;
-  price: string;
+  price: string | number;
   img: string;
 }

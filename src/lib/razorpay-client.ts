@@ -39,6 +39,15 @@ export type RazorpayCheckoutOptions = {
   modal?: {
     ondismiss?: () => void;
   };
+  config?: {
+    display?: {
+      blocks?: Record<string, any>;
+      sequence?: string[];
+      preferences?: {
+        show_default_blocks?: boolean;
+      };
+    };
+  };
 };
 
 type RazorpayInstance = {
@@ -83,6 +92,9 @@ export function loadRazorpayCheckoutScript() {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
+    script.crossOrigin = 'anonymous';
+    // Note: Razorpay doesn't provide SRI hashes, but we're loading from their official CDN
+    // Consider implementing CSP headers for additional security
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
 

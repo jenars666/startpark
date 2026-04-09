@@ -1,4 +1,4 @@
-export const PHONE_NUMBER = "918667321060"; // Placeholder
+export const PHONE_NUMBER = "919345445164";
 export const UPI_ID = "starmenspark@upi"; // Placeholder
 export const SHOP_NAME = "Star Mens Park";
 

@@ -66,7 +66,9 @@ export function AdminLayout({ activeTab, setActiveTab, title, children }: AdminL
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    router.push('/login');
+    sessionStorage.removeItem('star_admin');
+    document.cookie = 'user-role=; path=/; max-age=0';
+    window.location.href = '/login';
   };
 
   const toggleMobileMenu = () => {

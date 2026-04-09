@@ -4,7 +4,7 @@ import Hero from "../components/Hero";
 import FeaturesBar from "../components/FeaturesBar";
 import Catalog from "../components/Catalog";
 import PromoBanners from "../components/PromoBanners";
-import LatestCollection from "../components/LatestCollection";
+
 import StyleUpgrade from "../components/StyleUpgrade";
 import CustomerReviews from "../components/CustomerReviews";
 import Newsletter from "../components/Newsletter";
@@ -34,9 +34,7 @@ export default function RootHomePage() {
           <PromoBanners />
         </ScrollReveal>
         
-        <ScrollReveal direction="right" delay={0.2}>
-          <LatestCollection />
-        </ScrollReveal>
+
         
         <ScrollReveal direction="up" delay={0.1}>
           <StyleUpgrade />

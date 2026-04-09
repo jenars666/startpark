@@ -7,14 +7,18 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Share2, Heart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { vesthiMainProducts } from './vesthi-main-products';
-import { useCart } from '../../context/CartContext';
-import { useWishlist } from '../../context/WishlistContext';
+import { useProducts } from '../../hooks/useProducts';
+import { useGuestGuard } from '../../hooks/useGuestGuard';
+import { useCart } from '../../context/CartContextFirebase';
+import { useWishlist } from '../../context/WishlistContextFirebase';
 import './vesthi.css';
 
 export default function VesthiShirtPage() {
+  const { guardAddToCart, guardWishlist } = useGuestGuard();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const { products: vesthiMainProducts, loading } = useProducts('Vesthi');
 
   return (
     <div className="vesthi-page-wrapper">
@@ -24,27 +28,13 @@ export default function VesthiShirtPage() {
       <main>
         <section className="vesthi-hero">
           <div className="vesthi-hero-content">
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="hero-tag"
-            >
+            <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="hero-tag">
               Exclusive Collection
             </motion.span>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="hero-title"
-            >
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="hero-title">
               Vesthi & <br /><span>Premium Shirts</span>
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="hero-desc"
-            >
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="hero-desc">
               Elevate your traditional look with our premium collection of Vesthis and exquisitely tailored shirts. Perfect for weddings, festivals, and every special occasion.
             </motion.p>
           </div>
@@ -61,28 +51,19 @@ export default function VesthiShirtPage() {
               <Link href="/vesthi-shirt/premium" className="type-card-link">
                 <motion.div whileHover={{ y: -10 }} className="type-card">
                   <div className="type-image cotton-bg" />
-                  <div className="type-overlay">
-                    <h3>Premium</h3>
-                    <p>Ethnic Wear</p>
-                  </div>
+                  <div className="type-overlay"><h3>Premium</h3><p>Ethnic Wear</p></div>
                 </motion.div>
               </Link>
               <Link href="/vesthi-shirt/tissue" className="type-card-link">
                 <motion.div whileHover={{ y: -10 }} className="type-card">
                   <div className="type-image silk-bg" />
-                  <div className="type-overlay">
-                    <h3>Tissue</h3>
-                    <p>Everyday</p>
-                  </div>
+                  <div className="type-overlay"><h3>Tissue</h3><p>Everyday</p></div>
                 </motion.div>
               </Link>
               <Link href="/vesthi-shirt/classic" className="type-card-link">
                 <motion.div whileHover={{ y: -10 }} className="type-card">
                   <div className="type-image wedding-bg" />
-                  <div className="type-overlay">
-                    <h3>Classic</h3>
-                    <p>Heritage</p>
-                  </div>
+                  <div className="type-overlay"><h3>Classic</h3><p>Heritage</p></div>
                 </motion.div>
               </Link>
             </div>
@@ -99,7 +80,7 @@ export default function VesthiShirtPage() {
               <div className="results-count">Showing 1 - {vesthiMainProducts.length} products</div>
               <div className="sort-filter">
                 <span className="sort-label">
-                  Sort by: 
+                  Sort by:
                   <select aria-label="Sort products">
                     <option>Recommended</option>
                     <option>Price Low to High</option>
@@ -123,39 +104,36 @@ export default function VesthiShirtPage() {
                       {product.tag && <span className="v-tag">{product.tag}</span>}
                       <Image src={product.img} alt={product.name} fill className="v-product-image" sizes="(max-width: 768px) 100vw, 300px" />
                       <div className="v-hover-actions">
-                        <button 
-                          className="v-action-btn" 
+                        <button
+                          className="v-action-btn"
                           title="Add to Cart"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 };
+                            if (!guardAddToCart(item)) return;
+                            await addToCart(item);
                           }}
                         >
                           <ShoppingCart size={18} />
                         </button>
-                        <button 
-                          className="v-action-btn" 
+                        <button
+                          className="v-action-btn"
                           title="Wishlist"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (isInWishlist(product.id)) {
-                              removeFromWishlist(product.id);
-                            } else {
-                              addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
-                            }
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+                            if (isInWishlist(product.id)) { await removeFromWishlist(product.id); }
+                            else { if (!guardWishlist(item)) return; await addToWishlist(item); }
                           }}
                         >
-                          <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} />
+                          <Heart size={18} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
                         </button>
-                        <button 
-                          className="v-action-btn" 
+                        <button
+                          className="v-action-btn"
                           title="Share"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                         >
                           <Share2 size={18} />
                         </button>
@@ -167,9 +145,7 @@ export default function VesthiShirtPage() {
                         <span className="v-old-price">₹{product.oldPrice}</span>
                         <span className="v-new-price">₹{product.price}</span>
                       </div>
-                      <button className="v-enquire-btn">
-                        VIEW DETAILS <ArrowRight size={14} />
-                      </button>
+                      <button className="v-enquire-btn">VIEW DETAILS <ArrowRight size={14} /></button>
                     </div>
                   </motion.div>
                 </Link>
@@ -191,4 +167,3 @@ export default function VesthiShirtPage() {
     </div>
   );
 }
-

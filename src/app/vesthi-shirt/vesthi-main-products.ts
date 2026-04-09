@@ -1,11 +1,15 @@
-export const vesthiMainProducts = [
+import { Product } from '../../types/product';
+
+export const vesthiMainProducts: Product[] = [
   {
     id: 101,
     name: 'Manamagan Premium Gold Silk Set',
     price: '1,599',
     oldPrice: '2,200',
     img: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.07 AM.jpeg',
-    tag: 'Best Seller'
+    tag: 'Best Seller',
+    category: 'Shirt',
+    showStockNote: true,
   },
   {
     id: 201,
@@ -13,7 +17,8 @@ export const vesthiMainProducts = [
     price: '1,299',
     oldPrice: '1,899',
     img: '/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.06 AM.jpeg',
-    tag: 'Classic'
+    tag: 'Classic',
+    category: 'Shirt',
   },
   {
     id: 301,
@@ -21,7 +26,9 @@ export const vesthiMainProducts = [
     price: '2,100',
     oldPrice: '2,800',
     img: '/images/Mappillai/premium banner.webp',
-    tag: 'Tissue'
+    tag: 'Tissue',
+    category: 'Shirt',
+    showStockNote: true,
   },
   {
     id: 104,
@@ -29,7 +36,8 @@ export const vesthiMainProducts = [
     price: '1,750',
     oldPrice: '2,400',
     img: '/images/Manamagan/WhatsApp Image 2026-03-22 at 10.50.08 AM.jpeg',
-    tag: 'New'
+    tag: 'New',
+    category: 'Shirt',
   },
   {
     id: 202,
@@ -37,7 +45,8 @@ export const vesthiMainProducts = [
     price: '999',
     oldPrice: '1,499',
     img: '/images/Classic Matching Set/WhatsApp Image 2026-03-22 at 10.49.08 AM.jpeg',
-    tag: 'Classic'
+    tag: 'Classic',
+    category: 'Shirt',
   },
   {
     id: 303,

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Instagram, Facebook, Youtube, Chrome } from 'lucide-react';
+import { CONTACT_INFO } from '@/config/contact';
 import './Footer.css';
 
 export default function Footer() {
@@ -65,15 +66,15 @@ export default function Footer() {
           <ul className="support-list">
             <li>
               <MapPin size={16} className="support-icon" />
-              <span>St Mary's Building, 194, Main Road, Near Sri Vellai Vinayagar Kovil,<br/>Dindigul Bazaar, Tamil Nadu 624001</span>
+              <span>{CONTACT_INFO.address}</span>
             </li>
             <li>
               <Phone size={16} className="support-icon" />
-              <span>(+91) 93454 45164</span>
+              <a href={`tel:${CONTACT_INFO.phone}`}>{CONTACT_INFO.phone}</a>
             </li>
             <li>
               <Mail size={16} className="support-icon" />
-              <span>starmenspark@gmail.com</span>
+              <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a>
             </li>
           </ul>
         </div>
@@ -84,10 +85,9 @@ export default function Footer() {
       <div className="footer-bottom">
         <div className="container bottom-content">
           <div className="social-circles">
-            <a href="#" aria-label="Google"><Chrome size={16} /></a>
-            <a href="#" aria-label="Youtube"><Youtube size={16} /></a>
-            <a href="#" aria-label="Facebook"><Facebook size={16} /></a>
-            <a href="#" aria-label="Instagram"><Instagram size={16} /></a>
+            <a href={CONTACT_INFO.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram size={16} /></a>
+            <a href={CONTACT_INFO.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook size={16} /></a>
+            <a href={CONTACT_INFO.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="Youtube"><Youtube size={16} /></a>
           </div>
           
           <div className="copyright">

@@ -20,8 +20,12 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formalProducts } from '../../formal-products';
-import { useCart } from '../../../../context/CartContext';
-import { useWishlist } from '../../../../context/WishlistContext';
+import { useCart } from '../../../../context/CartContextFirebase';
+import { useGuestGuard } from '../../../../hooks/useGuestGuard';
+import { useWishlist } from '../../../../context/WishlistContextFirebase';
+import { useProductById } from '../../../../hooks/useProductById';
+import { Product } from '../../../../types/product';
+import { sanitizeInput, sanitizeHtml } from '../../../../utils/security';
 import './product-detail.css';
 
 const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'] as const;
@@ -93,36 +97,100 @@ function renderStars(rating: number, className?: string) {
   });
 }
 
+type FormalDetailProduct = Omit<(typeof formalProducts)[number], 'id'> & { id: number | string };
+
+function mapProductToFormalDetail(product: Product): FormalDetailProduct {
+  return {
+    id: product.id,
+    name: product.name || 'Formal Shirt',
+    price: product.price || '0',
+    oldPrice: product.oldPrice || product.price || '0',
+    img: product.img || '/images/groupshirt.png',
+    tag: product.tag,
+    color: product.color || 'Black',
+    rating: product.rating ?? 4.8,
+    reviews: product.reviews ?? 10,
+    sizes: product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL', 'XXL'],
+    discount: product.discount,
+    category: product.category || 'Formal Shirt',
+  };
+}
+
 export default function FormalProductDetail() {
   const params = useParams();
-  const productId = Number(params.id);
-  const product = formalProducts.find((item) => item.id === productId) || formalProducts[0];
+  const routeProductId = (Array.isArray(params.id) ? params.id[0] : params.id) ?? '';
+  const numericProductId = Number(routeProductId);
+  const isNumericId = !Number.isNaN(numericProductId) && String(numericProductId) === routeProductId;
+  const staticProduct = isNumericId
+    ? formalProducts.find((item) => String(item.id) === routeProductId) || formalProducts[0]
+    : null;
+  const { product: firestoreProduct, loading: loadingFirestoreProduct } = useProductById(
+    isNumericId ? null : routeProductId
+  );
+
+  const product: FormalDetailProduct | null = firestoreProduct
+    ? mapProductToFormalDetail(firestoreProduct)
+    : staticProduct;
+
+  if (!isNumericId && loadingFirestoreProduct && !firestoreProduct) {
+    return (
+      <div className="atelier-product-page">
+        <main className="atelier-detail-main">
+          <section className="atelier-summary-card">
+            <h1 className="atelier-product-title">Loading product...</h1>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="atelier-product-page">
+        <main className="atelier-detail-main">
+          <section className="atelier-summary-card">
+            <h1 className="atelier-product-title">Product not found.</h1>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return <FormalProductDetailView key={product.id} product={product} />;
 }
 
-function FormalProductDetailView({ product }: { product: (typeof formalProducts)[number] }) {
+function FormalProductDetailView({ product }: { product: FormalDetailProduct }) {
   const router = useRouter();
-  const { addToCart, totalItems } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { totalItems, addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { guardAddToCart, guardBuyNow, guardWishlist } = useGuestGuard();
   const discount = getDiscount(product);
+  const productPath = `/formal-shirt/product/${product.id}`;
+
+  const productPool = useMemo(() => {
+    if (formalProducts.some((item) => String(item.id) === String(product.id))) {
+      return formalProducts;
+    }
+
+    return [product, ...formalProducts];
+  }, [product]);
 
   const galleryImages = useMemo(() => {
     const pool = [
       product.img,
-      ...formalProducts
+      ...productPool
         .filter((item) => item.id !== product.id && item.color === product.color)
         .map((item) => item.img),
-      ...formalProducts.filter((item) => item.id !== product.id).map((item) => item.img),
+      ...productPool.filter((item) => item.id !== product.id).map((item) => item.img),
     ];
 
     return Array.from(new Set(pool)).slice(0, 3);
-  }, [product.color, product.id, product.img]);
+  }, [product.color, product.id, product.img, productPool]);
 
   const relatedProducts = useMemo(() => {
     const seen = new Set<string>([product.img]);
 
-    return formalProducts
+    return productPool
       .filter((item) => item.id !== product.id)
       .filter((item) => {
         if (seen.has(item.img)) return false;
@@ -130,7 +198,7 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
         return true;
       })
       .slice(0, 3);
-  }, [product.id, product.img]);
+  }, [product.id, product.img, productPool]);
 
   const featureItems = useMemo(
     () => [
@@ -203,19 +271,17 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
     router.push('/formal-shirt');
   };
 
-  const addCurrentProductToCart = () => {
-    addToCart({
-      id: `${product.id}-${selectedSize}`,
-      name: `${product.name} (${selectedSize})`,
-      price: product.price,
-      img: product.img,
-      quantity: 1,
-    });
+  const addCurrentProductToCart = async () => {
+    const item = { id: `${product.id}-${selectedSize}`, name: `${product.name} (${selectedSize})`, price: product.price, img: product.img, quantity: 1 };
+    if (!guardAddToCart(item)) return;
+    await addToCart(item);
   };
 
-  const handleBuyNow = () => {
-    addCurrentProductToCart();
-    toast.success('Added to bag. You can continue checkout from the cart.');
+  const handleBuyNow = async () => {
+    const item = { id: `${product.id}-${selectedSize}`, name: `${product.name} (${selectedSize})`, price: product.price, img: product.img, quantity: 1 };
+    if (!guardBuyNow(item)) return;
+    await addToCart(item);
+    router.push('/checkout');
   };
 
   const handleShare = async () => {
@@ -243,18 +309,10 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
     }
   };
 
-  const toggleWishlist = () => {
-    if (wishlistActive) {
-      removeFromWishlist(product.id);
-      return;
-    }
-
-    addToWishlist({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      img: product.img,
-    });
+  const toggleWishlist = async () => {
+    const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+    if (wishlistActive) { await removeFromWishlist(product.id); }
+    else { if (!guardWishlist(item)) return; await addToWishlist(item); }
   };
 
   const handleHelpfulClick = (index: number) => {
@@ -266,9 +324,10 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
   };
 
   const handleReviewFieldChange = (field: keyof ReviewDraft, value: string | number) => {
+    const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
     setReviewDraft((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: sanitizedValue,
     }));
     setReviewError('');
   };
@@ -276,9 +335,9 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
   const handleReviewSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const name = reviewDraft.name.trim();
-    const title = reviewDraft.title.trim();
-    const body = reviewDraft.body.trim();
+    const name = sanitizeInput(reviewDraft.name.trim());
+    const title = sanitizeInput(reviewDraft.title.trim());
+    const body = sanitizeInput(reviewDraft.body.trim());
 
     if (!name || !title || !body || !reviewDraft.rating) {
       setReviewError('Please fill in your name, rating, title, and review before submitting.');
@@ -680,8 +739,8 @@ function FormalProductDetailView({ product }: { product: (typeof formalProducts)
                   <time>{review.date}</time>
                 </div>
 
-                <h3>{review.title}</h3>
-                <p className="atelier-review-copy">{review.body}</p>
+                <h3>{sanitizeHtml(review.title)}</h3>
+                <p className="atelier-review-copy">{sanitizeHtml(review.body)}</p>
 
                 {review.images.length > 0 && (
                   <div className="atelier-review-images no-scrollbar">

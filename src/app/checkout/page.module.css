@@ -1,0 +1,335 @@
+/* ── Page Shell ── */
+.checkoutPage {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 2rem 1rem 4rem;
+}
+
+.checkoutContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 2rem;
+}
+
+.breadcrumb span { color: #111; font-weight: 600; }
+.breadcrumb a { color: #9ca3af; text-decoration: none; }
+.breadcrumb a:hover { color: #374151; }
+
+/* ── Page Title ── */
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+
+/* ── Two-column grid ── */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .contentGrid { grid-template-columns: 1fr; }
+  .summaryCard { order: -1; }
+}
+
+/* ── Left column ── */
+.billingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Cards ── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.cardTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Form Fields ── */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.fieldFull { grid-column: 1 / -1; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.fieldLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.input,
+.select,
+.textarea {
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  color: #111;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.input::placeholder,
+.textarea::placeholder { color: #9ca3af; }
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #7c3aed;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.select { cursor: pointer; }
+.textarea { resize: none; }
+
+.fieldError {
+  font-size: 0.7rem;
+  color: #ef4444;
+  margin-top: 0.125rem;
+}
+
+/* ── Payment Options ── */
+.paymentOption {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: #f9fafb;
+}
+
+.paymentOption:hover { border-color: #d1d5db; background: #f3f4f6; }
+
+.paymentOption.selected {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.paymentBadges {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  letter-spacing: 0.03em;
+}
+
+/* ── Order Summary (right sticky card) ── */
+.summaryCard {
+  position: sticky;
+  top: 5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.orderItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-bottom: 1.25rem;
+  padding-right: 0.25rem;
+}
+
+.orderItems::-webkit-scrollbar { width: 4px; }
+.orderItems::-webkit-scrollbar-track { background: #f3f4f6; }
+.orderItems::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.625rem;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+}
+
+.productImage {
+  width: 52px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: #e5e7eb;
+}
+
+.orderItemText { flex: 1; min-width: 0; }
+
+.orderItemName {
+  color: #111;
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orderItemQty {
+  color: #9ca3af;
+  font-size: 0.7rem;
+  margin-top: 0.125rem;
+}
+
+/* ── Coupon ── */
+.couponRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.couponInput {
+  flex: 1;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  color: #111;
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.couponInput::placeholder { color: #9ca3af; }
+.couponInput:focus { border-color: #7c3aed; background: #fff; }
+
+.couponBtn {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.625rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.couponBtn:hover { background: #374151; }
+
+/* ── Summary Rows ── */
+.summaryDivider {
+  border: none;
+  border-top: 1px solid #f3f4f6;
+  margin: 1rem 0;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding: 0.25rem 0;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #111;
+  font-size: 1rem;
+  font-weight: 700;
+  padding-top: 0.75rem;
+  border-top: 1.5px solid #e5e7eb;
+  margin-top: 0.5rem;
+}
+
+/* ── CTA Button ── */
+.ctaButton {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.01em;
+  margin-top: 1.25rem;
+}
+
+.ctaButton:hover { background: #1f2937; }
+.ctaButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Trust Badges ── */
+.trustBadges {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.trustBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}

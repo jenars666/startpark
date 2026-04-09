@@ -1,0 +1,10 @@
+src/app/casual-shirt/product/[id]/page.tsx(190,41): error TS2339: Property 'reviews' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/casual-shirt/product/[id]/page.tsx(191,37): error TS2339: Property 'rating' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/casual-shirt/product/[id]/page.tsx(191,63): error TS2339: Property 'reviews' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/casual-shirt/product/[id]/page.tsx(375,64): error TS2339: Property 'rating' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/casual-shirt/product/[id]/page.tsx(443,45): error TS2339: Property 'sizes' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/vesthi-shirt/product/[id]/page.tsx(191,41): error TS2339: Property 'reviews' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/vesthi-shirt/product/[id]/page.tsx(192,37): error TS2339: Property 'rating' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/vesthi-shirt/product/[id]/page.tsx(192,63): error TS2339: Property 'reviews' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/vesthi-shirt/product/[id]/page.tsx(376,64): error TS2339: Property 'rating' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.
+src/app/vesthi-shirt/product/[id]/page.tsx(444,45): error TS2339: Property 'sizes' does not exist on type '{ id: number; name: string; price: string; oldPrice: string; img: string; tag: string; }'.

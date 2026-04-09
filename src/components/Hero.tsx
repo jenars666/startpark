@@ -31,6 +31,7 @@ export default function Hero() {
           <button
             className="hero-explore-btn"
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+            suppressHydrationWarning
           >
             EXPLORE COLLECTION
           </button>

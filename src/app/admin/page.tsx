@@ -1,95 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { subscribeToAllOrders } from '@/lib/firebase/orderService';
+import { subscribeToAllProducts } from '@/lib/firebase/productService';
+import { subscribeToWhatsAppEnquiries, subscribeToGroupOrders, subscribeToStockHistory, subscribeToCoupons, subscribeToFestivals, subscribeToStaff, subscribeToTopProducts, subscribeToReviews, subscribeToCustomers } from '@/lib/firebase/adminService';
+import { updateOrderStatus, updateProduct as updateProductDoc, deleteProduct as deleteProductDoc } from '@/lib/firebase/adminCrudService';
+import toast from 'react-hot-toast';
+
+import { Eye } from 'lucide-react';
 import {
-  TrendingUp, TrendingDown, ShoppingBag, Users,
+  TrendingUp,
   Package, IndianRupee, ArrowUpRight, Plus,
-  MessageSquare, Eye, Pencil, Trash2, Star,
-  Download, Filter, RefreshCw, ChevronRight,
-  Database, MessageCircle, Briefcase, Ticket,
-  Calendar, Shield, Search, Phone, ExternalLink,
-  History, CheckCircle2, AlertCircle, Clock, FileText
+  MessageSquare, Pencil, Trash2, Star,
+  Download, Filter, ChevronRight,
+  Database, MessageCircle, Briefcase,
+  Calendar, Shield, Phone, ExternalLink,
+  History, CheckCircle2, AlertCircle, Clock, FileText, Users
 } from 'lucide-react';
 import { AdminLayout } from './AdminLayout';
 
 /* ── Mock Data ── */
-const WHATSAPP_ENQUIRIES = [
-  { id: 'W-001', name: 'Manoj P',    phone: '+91 98401 23456', message: 'Need 50 shirts for wedding in blue', status: 'new',       date: 'Today, 10:30 AM' },
-  { id: 'W-002', name: 'Sathish R',  phone: '+91 91234 56789', message: 'Do you have 3XL designer white?',    status: 'replied',   date: 'Today, 09:15 AM' },
-  { id: 'W-003', name: 'Kunal G',    phone: '+91 99887 76655', message: 'Price for bulk booking?',            status: 'confirmed', date: 'Yesterday' },
-  { id: 'W-004', name: 'Arun V',     phone: '+91 94432 12345', message: 'Ready to pay advance for 20 units', status: 'completed', date: '20 Mar' },
-];
 
-const GROUP_ORDERS = [
-  { id: 'GR-105', event: 'Lakshmi Wedding', count: 45, color: 'Navy Blue', date: '15 Apr 2026', status: 'in_progress', revenue: '₹42,750' },
-  { id: 'GR-104', event: 'Office Annual Meet', count: 120, color: 'Classic White', date: '02 Apr 2026', status: 'confirmed', revenue: '₹1,14,000' },
-  { id: 'GR-103', event: 'Family Function', count: 15, color: 'Yellow', date: '25 Mar 2026', status: 'ready', revenue: '₹14,250' },
-  { id: 'GR-102', event: 'College Reunion', count: 80, color: 'Sky Blue', date: '21 Mar 2026', status: 'delivered', revenue: '₹76,000' },
-];
 
-const STOCK_HISTORY = [
-  { product: 'Group Shirt (Blue)', action: 'Restocked', qty: '+50', by: 'Admin', date: 'Today, 11:20 AM' },
-  { product: 'Designer White', action: 'Update', qty: '-3', by: 'Sales Staff A', date: 'Today, 10:45 AM' },
-  { product: 'Formal Bottom', action: 'Sync', qty: '0', by: 'System', date: 'Today, 09:00 AM' },
-];
 
-const COUPONS = [
-  { code: 'STUDENT10', type: 'Percentage', value: '10%', used: 142, status: 'active', expiry: '31 Dec 2026' },
-  { code: 'FESTIVAL500', type: 'Flat', value: '₹500', used: 85, status: 'active', expiry: '15 Apr 2026' },
-  { code: 'WELCOME5', type: 'Percentage', value: '5%', used: 312, status: 'inactive', expiry: 'Expired' },
-];
 
-const FESTIVALS = [
-  { name: 'Tamil New Year', date: '14 Apr 2026', status: 'upcoming', enquiries: 12 },
-  { name: 'Eid al-Fitr', date: '31 Mar 2026', status: 'immediate', enquiries: 24 },
-  { name: 'Pongal', date: '14 Jan 2026', status: 'past', enquiries: 145 },
-];
 
-const STAFF = [
-  { name: 'Admin (You)', role: 'Owner', access: 'All', status: 'active' },
-  { name: 'Muthu', role: 'Sales Manager', access: 'Orders, Inventory', status: 'active' },
-  { name: 'Saravanan', role: 'Staff', access: 'Inventory', status: 'active' },
-];
 
-const RECENT_ORDERS = [
-  { id: '#ORD-1042', customer: 'Rajan Kumar',   product: 'Group Shirt (Blue)',      amount: '₹3,990',  status: 'delivered',  date: '21 Mar 2026' },
-  { id: '#ORD-1041', customer: 'Muthukumar S',  product: 'Designer Shirt (White)',  amount: '₹1,299',  status: 'processing', date: '21 Mar 2026' },
-  { id: '#ORD-1040', customer: 'Vijay D',        product: 'Formal Bottom',          amount: '₹850',    status: 'pending',    date: '20 Mar 2026' },
-  { id: '#ORD-1039', customer: 'Arjun M',        product: 'Casual Shirt Pack x5',   amount: '₹6,500',  status: 'delivered',  date: '20 Mar 2026' },
-  { id: '#ORD-1038', customer: 'Suresh R',       product: 'Vesti & Shirt Combo',    amount: '₹1,750',  status: 'cancelled',  date: '19 Mar 2026' },
-];
 
-const TOP_PRODUCTS = [
-  { name: 'Group Shirt – Navy Blue',    category: 'Group Shirts',    price: '₹950',  sales: 142, img: 'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?w=100&q=80' },
-  { name: 'Designer Shirt – White',    category: 'Designer Shirts', price: '₹1,299', sales: 98,  img: 'https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=100&q=80' },
-  { name: 'Formal Bottom – Black',     category: 'Bottoms',         price: '₹850',  sales: 76,  img: 'https://images.unsplash.com/photo-1542272604-78021c326e0e?w=100&q=80' },
-  { name: 'Casual Patterned Shirt',    category: 'Casual',          price: '₹799',  sales: 64,  img: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=100&q=80' },
-  { name: 'Vesti & Shirt Combo',       category: 'Vesti & Shirt',   price: '₹1,750', sales: 55, img: 'https://images.unsplash.com/photo-1620012253295-c159f0f9b3ec?w=100&q=80' },
-];
 
-const REVIEWS = [
-  { name: 'Priya S',     rating: 5, text: 'Shirts were perfect for our family function. Quality is top notch!', date: '20 Mar' },
-  { name: 'Karthik M',   rating: 5, text: 'Best group shirt shop in Dindigul. Fast delivery too!',               date: '18 Mar' },
-  { name: 'Anand R',     rating: 4, text: 'Good quality material. Will order again.',                            date: '17 Mar' },
-  { name: 'Meena V',     rating: 5, text: 'Loved the Vesti & Shirt combo. Got so many compliments!',             date: '15 Mar' },
-];
 
-const CUSTOMERS = [
-  { name: 'Rajan Kumar',   email: 'rajan@gmail.com',    orders: 7,  total: '₹24,300', joined: 'Jan 2026',  status: 'active' },
-  { name: 'Vijay D',       email: 'vijay@gmail.com',    orders: 4,  total: '₹8,990',  joined: 'Feb 2026',  status: 'active' },
-  { name: 'Suresh R',      email: 'suresh@gmail.com',   orders: 2,  total: '₹3,500',  joined: 'Mar 2026',  status: 'inactive' },
-  { name: 'Muthukumar S',  email: 'muthu@gmail.com',    orders: 12, total: '₹41,200', joined: 'Dec 2025',  status: 'active' },
-  { name: 'Arjun M',       email: 'arjun@gmail.com',    orders: 3,  total: '₹9,750',  joined: 'Mar 2026',  status: 'active' },
-];
 
-const PRODUCTS_LIST = [
-  { id: 'P001', name: 'Group Shirt - Navy Blue', category: 'Group Shirts', price: '₹950',  stock: 58, status: 'active' },
-  { id: 'P002', name: 'Designer Shirt - White',  category: 'Designer',     price: '₹1,299',stock: 23, status: 'active' },
-  { id: 'P003', name: 'Formal Bottom - Black',   category: 'Bottoms',      price: '₹850',  stock: 0,  status: 'out_of_stock' },
-  { id: 'P004', name: 'Casual Patterned Shirt',  category: 'Casual',       price: '₹799',  stock: 44, status: 'active' },
-  { id: 'P005', name: 'Vesti & Shirt Combo',      category: 'Vesti',        price: '₹1,750',stock: 17, status: 'active' },
-  { id: 'P006', name: 'Formal Shirt - Light Blue',category: 'Formal',       price: '₹999', stock: 31, status: 'active' },
-];
+
+
+
+
+
+
+
+
+
+
+
 
 /* ── Helper ── */
 function StatusBadge({ status }: { status: string }) {
@@ -108,6 +59,27 @@ function StarRating({ rating }: { rating: number }) {
 
 /* ── Tab Views ── */
 function DashboardTab() {
+
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [topProducts, setTopProducts] = useState<any[]>([]);
+  const [stockHistory, setStockHistory] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allCustomers, setAllCustomers] = useState<any[]>([]);
+  const [allEnquiries, setAllEnquiries] = useState<any[]>([]);
+  useEffect(() => {
+    const unsubR = subscribeToAllOrders(setRecentOrders);
+    const unsubT = subscribeToTopProducts(setTopProducts);
+    const unsubS = subscribeToStockHistory(setStockHistory);
+    const unsubP = subscribeToAllProducts(setAllProducts);
+    const unsubC = subscribeToCustomers(setAllCustomers);
+    const unsubE = subscribeToWhatsAppEnquiries(setAllEnquiries);
+    return () => { unsubR(); unsubT(); unsubS(); unsubP(); unsubC(); unsubE(); };
+  }, []);
+
+  const totalRevenue = recentOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const lowStockCount = allProducts.filter(p => p.stock > 0 && p.stock < 20).length;
+  const newEnquiryCount = allEnquiries.filter(e => e.status === 'new').length;
+
   return (
     <>
       <div className="admin-page-header">
@@ -121,32 +93,32 @@ function DashboardTab() {
             <span className="admin-stat-label">Total Revenue</span>
             <div className="admin-stat-icon admin-action-btn blue"><IndianRupee size={18} /></div>
           </div>
-          <div className="admin-stat-number">₹2,84,500</div>
-          <div className="admin-stat-change up"><TrendingUp size={13} /> +18.2% this month</div>
+          <div className="admin-stat-number">₹{totalRevenue.toLocaleString('en-IN')}</div>
+          <div className="admin-stat-change up"><TrendingUp size={13} /> {recentOrders.length} orders total</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-header">
-            <span className="admin-stat-label">Group Orders</span>
-            <div className="admin-stat-icon admin-action-btn purple"><Briefcase size={18} /></div>
+            <span className="admin-stat-label">Total Customers</span>
+            <div className="admin-stat-icon admin-action-btn purple"><Users size={18} /></div>
           </div>
-          <div className="admin-stat-number">12 Active</div>
-          <div className="admin-stat-change up"><Plus size={13} /> 3 new this week</div>
+          <div className="admin-stat-number">{allCustomers.length}</div>
+          <div className="admin-stat-change up"><TrendingUp size={13} /> Registered users</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-header">
             <span className="admin-stat-label">Stock Alerts</span>
             <div className="admin-stat-icon admin-action-btn orange"><AlertCircle size={18} /></div>
           </div>
-          <div className="admin-stat-number">4 Items</div>
-          <div className="admin-stat-change orange">Critical levels</div>
+          <div className="admin-stat-number">{lowStockCount} Items</div>
+          <div className="admin-stat-change orange">{lowStockCount > 0 ? 'Low stock levels' : 'All stocked'}</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-header">
             <span className="admin-stat-label">WhatsApp Enquiries</span>
             <div className="admin-stat-icon admin-action-btn green"><MessageCircle size={18} /></div>
           </div>
-          <div className="admin-stat-number">8 New</div>
-          <div className="admin-stat-change up"><TrendingUp size={13} /> High traffic</div>
+          <div className="admin-stat-number">{newEnquiryCount > 0 ? `${newEnquiryCount} New` : `${allEnquiries.length} Total`}</div>
+          <div className="admin-stat-change up">{allEnquiries.length > 0 ? <><TrendingUp size={13} /> Active</> : 'No enquiries yet'}</div>
         </div>
       </div>
 
@@ -208,7 +180,7 @@ function DashboardTab() {
                 <tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th></tr>
               </thead>
               <tbody>
-                {RECENT_ORDERS.slice(0, 4).map(order => (
+                {recentOrders.slice(0, 4).map(order => (
                   <tr key={order.id}>
                     <td><code className="admin-code-blue">{order.id}</code></td>
                     <td className="admin-fw-600">{order.customer}</td>
@@ -224,13 +196,13 @@ function DashboardTab() {
 
         <div className="admin-card">
           <div className="admin-card-header">
-            <span className="admin-card-title">Upcoming Festival</span>
+            <span className="admin-card-title">Quick Stats</span>
           </div>
           <div className="admin-festival-widget alert">
-            <div className="admin-text-red admin-fw-800">Eid al-Fitr</div>
-            <div className="admin-text-muted-sm">31st March 2026</div>
-            <div className="admin-text-muted-xs mt-8">24 Pre-orders waiting</div>
-            <button className="admin-quick-btn orange mt-12 w-full" title="Send Broadcast">Send Broadcast</button>
+            <div className="admin-fw-800" style={{ color: '#3b82f6' }}>{recentOrders.filter(o => o.status === 'pending').length} Pending</div>
+            <div className="admin-text-muted-sm">Orders awaiting processing</div>
+            <div className="admin-text-muted-xs mt-8">{recentOrders.filter(o => o.status === 'delivered').length} Delivered</div>
+            <div className="admin-text-muted-xs">{recentOrders.filter(o => o.status === 'processing').length} Processing</div>
           </div>
         </div>
       </div>
@@ -239,6 +211,119 @@ function DashboardTab() {
 }
 
 function ProductsTab() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    category: 'Casual Shirt',
+    price: '0',
+    oldPrice: '',
+    stock: '0',
+    status: 'active',
+    tag: '',
+    color: 'Multi',
+  });
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAllProducts((data) => {
+      setProducts(data);
+      setLoading(false);
+    });
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  function openEditModal(product: any) {
+    setEditingProduct(product);
+    setEditForm({
+      name: product.name || product.title || '',
+      category: product.category || 'Casual Shirt',
+      price: String(product.price ?? '0'),
+      oldPrice: product.oldPrice ? String(product.oldPrice) : '',
+      stock: String(product.stock ?? 0),
+      status: product.status || (product.stock === 0 ? 'out_of_stock' : 'active'),
+      tag: product.tag || '',
+      color: product.color || 'Multi',
+    });
+  }
+
+  function closeEditModal() {
+    if (savingEdit) return;
+    setEditingProduct(null);
+  }
+
+  async function handleEditSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    const trimmedName = editForm.name.trim();
+    const trimmedCategory = editForm.category.trim();
+    const normalizedPrice = editForm.price.replace(/[^0-9.]/g, '') || '0';
+    const normalizedOldPrice = editForm.oldPrice.replace(/[^0-9.]/g, '');
+    const parsedStock = Number(editForm.stock);
+    const normalizedStock = Number.isFinite(parsedStock) && parsedStock >= 0
+      ? Math.floor(parsedStock)
+      : 0;
+
+    if (!trimmedName) {
+      toast.error('Product name is required.');
+      return;
+    }
+
+    if (!trimmedCategory) {
+      toast.error('Category is required.');
+      return;
+    }
+
+    setSavingEdit(true);
+
+    try {
+      await updateProductDoc(editingProduct.id, {
+        name: trimmedName,
+        category: trimmedCategory,
+        price: normalizedPrice,
+        oldPrice: normalizedOldPrice || normalizedPrice,
+        stock: normalizedStock,
+        inStock: normalizedStock > 0,
+        status: normalizedStock === 0 ? 'out_of_stock' : editForm.status,
+        tag: editForm.tag.trim(),
+        color: editForm.color.trim() || 'Multi',
+      });
+
+      toast.success('Product updated successfully.');
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      toast.error('Failed to update product. Please try again.');
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  async function handleDeleteProduct(product: any) {
+    const confirmed = window.confirm(
+      `Delete "${product.name || product.title || 'this product'}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setDeletingProductId(product.id);
+
+    try {
+      await deleteProductDoc(product.id);
+      toast.success('Product deleted successfully.');
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      toast.error('Failed to delete product. Please try again.');
+    } finally {
+      setDeletingProductId(null);
+    }
+  }
+
   return (
     <>
       <div className="admin-page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -246,13 +331,17 @@ function ProductsTab() {
           <h1 className="admin-page-title">Products</h1>
           <p className="admin-page-subtitle">Manage your product catalogue</p>
         </div>
-        <button className="admin-quick-btn blue" style={{ width: 'auto', padding: '0.6rem 1.25rem' }}>
+        <button 
+          onClick={() => window.location.href = '/admin/products/add'}
+          className="admin-quick-btn blue" 
+          style={{ width: 'auto', padding: '0.6rem 1.25rem' }}
+        >
           <Plus size={16} /> Add Product
         </button>
       </div>
       <div className="admin-card">
         <div className="admin-card-header">
-          <span className="admin-card-title">All Products ({PRODUCTS_LIST.length})</span>
+          <span className="admin-card-title">All Products ({loading ? '...' : products.length})</span>
           <button className="admin-card-action"><Filter size={13} /> Filter</button>
         </div>
         <div className="admin-table-wrapper">
@@ -263,23 +352,44 @@ function ProductsTab() {
               </tr>
             </thead>
             <tbody>
-              {PRODUCTS_LIST.map(p => (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="admin-text-center admin-text-muted-sm">Loading products...</td>
+                </tr>
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="admin-text-center admin-text-muted-sm">No products found.</td>
+                </tr>
+              ) : products.map(p => (
                 <tr key={p.id}>
                   <td><code className="admin-code-gray">{p.id}</code></td>
-                  <td className="admin-fw-600">{p.name}</td>
+                  <td className="admin-fw-600">{p.name || p.title}</td>
                   <td className="admin-text-muted-sm">{p.category}</td>
-                  <td className="admin-fw-700">{p.price}</td>
+                  <td className="admin-fw-700">₹{p.price}</td>
                   <td>
                     <span className={`admin-fw-700 ${p.stock === 0 ? 'admin-action-btn-red' : p.stock < 20 ? 'admin-stat-change orange' : 'admin-stat-change up'}`} style={{ color: p.stock === 0 ? '#ef4444' : p.stock < 20 ? '#f97316' : '#10b981' }}>
                       {p.stock === 0 ? 'Out of Stock' : `${p.stock} units`}
                     </span>
                   </td>
-                  <td><StatusBadge status={p.status} /></td>
+                  <td><StatusBadge status={p.status || 'active'} /></td>
                   <td>
                     <div className="admin-action-btn-group">
                       <button className="admin-action-btn blue" title="View"><Eye size={13} /></button>
-                      <button className="admin-action-btn green" title="Edit"><Pencil size={13} /></button>
-                      <button className="admin-action-btn red" title="Delete"><Trash2 size={13} /></button>
+                      <button
+                        className="admin-action-btn green"
+                        title="Edit"
+                        onClick={() => openEditModal(p)}
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        className="admin-action-btn red"
+                        title="Delete"
+                        onClick={() => handleDeleteProduct(p)}
+                        disabled={deletingProductId === p.id}
+                      >
+                        {deletingProductId === p.id ? <Clock size={13} /> : <Trash2 size={13} />}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -288,11 +398,165 @@ function ProductsTab() {
           </table>
         </div>
       </div>
+
+      {editingProduct && (
+        <div className="admin-modal-overlay" role="dialog" aria-modal="true">
+          <div className="admin-modal-card">
+            <div className="admin-modal-header">
+              <h3 className="admin-modal-title">Edit Product</h3>
+              <button className="admin-card-action" onClick={closeEditModal} disabled={savingEdit}>
+                Close
+              </button>
+            </div>
+
+            <form className="admin-modal-body" onSubmit={handleEditSubmit}>
+              <div className="admin-grid-2">
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-name">Product Name</label>
+                  <input
+                    id="edit-product-name"
+                    title="Product Name"
+                    className="admin-settings-value"
+                    value={editForm.name}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-category">Category</label>
+                  <select
+                    id="edit-product-category"
+                    title="Category"
+                    className="admin-settings-value"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, category: e.target.value }))}
+                  >
+                    <option value="Casual Shirt">Casual Shirt</option>
+                    <option value="Formal Shirt">Formal Shirt</option>
+                    <option value="Vesthi">Vesthi</option>
+                    <option value="Group Shirt">Group Shirt</option>
+                  </select>
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-price">Sale Price</label>
+                  <input
+                    id="edit-product-price"
+                    title="Sale Price"
+                    className="admin-settings-value"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, price: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-old-price">Original Price</label>
+                  <input
+                    id="edit-product-old-price"
+                    title="Original Price"
+                    className="admin-settings-value"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editForm.oldPrice}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, oldPrice: e.target.value }))}
+                  />
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-stock">Stock</label>
+                  <input
+                    id="edit-product-stock"
+                    title="Stock"
+                    className="admin-settings-value"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={editForm.stock}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, stock: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-status">Status</label>
+                  <select
+                    id="edit-product-status"
+                    title="Status"
+                    className="admin-settings-value"
+                    value={editForm.status}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, status: e.target.value }))}
+                  >
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="out_of_stock">out_of_stock</option>
+                  </select>
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-tag">Tag</label>
+                  <input
+                    id="edit-product-tag"
+                    title="Tag"
+                    className="admin-settings-value"
+                    value={editForm.tag}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, tag: e.target.value }))}
+                    placeholder="Bestseller / New / Sale"
+                  />
+                </div>
+
+                <div className="admin-settings-field">
+                  <label className="admin-settings-label" htmlFor="edit-product-color">Color</label>
+                  <input
+                    id="edit-product-color"
+                    title="Color"
+                    className="admin-settings-value"
+                    value={editForm.color}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, color: e.target.value }))}
+                    placeholder="Multi"
+                  />
+                </div>
+              </div>
+
+              <div className="admin-modal-footer">
+                <button type="button" className="admin-action-btn gray" onClick={closeEditModal} disabled={savingEdit}>
+                  Cancel
+                </button>
+                <button type="submit" className="admin-quick-btn blue" disabled={savingEdit}>
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 function OrdersTab() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAllOrders((data) => {
+      setOrders(data);
+      setLoading(false);
+    });
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  const deliveredCount = orders.filter(o => o.status === 'delivered').length;
+  const processingCount = orders.filter(o => o.status === 'processing').length;
+  const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
+
   return (
     <>
       <div className="admin-page-header">
@@ -301,14 +565,14 @@ function OrdersTab() {
       </div>
       <div className="admin-stats-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
         {[
-          { label: 'Total Orders', value: '1,042', color: '#3b82f6' },
-          { label: 'Delivered',    value: '980',   color: '#10b981' },
-          { label: 'Processing',   value: '37',    color: '#f59e0b' },
-          { label: 'Cancelled',    value: '25',    color: '#ef4444' },
+          { label: 'Total Orders', value: orders.length.toString(), color: '#3b82f6' },
+          { label: 'Delivered',    value: deliveredCount.toString(),   color: '#10b981' },
+          { label: 'Processing',   value: processingCount.toString(),    color: '#f59e0b' },
+          { label: 'Cancelled',    value: cancelledCount.toString(),    color: '#ef4444' },
         ].map(s => (
           <div key={s.label} className="admin-stat-card">
             <div className="admin-stat-label">{s.label}</div>
-            <div className="admin-stat-number" style={{ color: s.color }}>{s.value}</div>
+            <div className="admin-stat-number" style={{ color: s.color }}>{loading ? '...' : s.value}</div>
           </div>
         ))}
       </div>
@@ -325,14 +589,40 @@ function OrdersTab() {
               </tr>
             </thead>
             <tbody>
-              {RECENT_ORDERS.map(o => (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="admin-text-center admin-text-muted-sm">Loading orders...</td>
+                </tr>
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="admin-text-center admin-text-muted-sm">No orders found.</td>
+                </tr>
+              ) : orders.map(o => (
                 <tr key={o.id}>
                   <td><code className="admin-code-blue">{o.id}</code></td>
-                  <td className="admin-fw-600">{o.customer}</td>
-                  <td className="admin-text-muted-sm">{o.product}</td>
-                  <td className="admin-fw-700">{o.amount}</td>
-                  <td className="admin-text-muted-sm">{o.date}</td>
-                  <td><StatusBadge status={o.status} /></td>
+                  <td className="admin-fw-600">
+                    {o.customerInfo?.name || o.customer?.name || 'Guest'}
+                  </td>
+                  <td className="admin-text-muted-sm">
+                    {o.items?.map((i: any) => i.name).join(', ') || o.product || 'Unknown'}
+                  </td>
+                  <td className="admin-fw-700">₹{(o.total || o.amount || 0).toLocaleString('en-IN')}</td>
+                  <td className="admin-text-muted-sm">
+                    {o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString() : (o.date || new Date().toLocaleDateString())}
+                  </td>
+                  <td>
+                    <select 
+                      value={o.status?.toLowerCase() || 'pending'} 
+                      onChange={(e) => updateOrderStatus(o.id, e.target.value)}
+                      style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '12px' }}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </td>
                   <td><button className="admin-card-action admin-text-muted-xs">View <ChevronRight size={12} /></button></td>
                 </tr>
               ))}
@@ -345,6 +635,10 @@ function OrdersTab() {
 }
 
 function CustomersTab() {
+
+  const [CUSTOMERS, setCustomers] = useState<any[]>([]);
+  useEffect(() => { return subscribeToCustomers(setCustomers); }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -389,6 +683,10 @@ function CustomersTab() {
 }
 
 function ReviewsTab() {
+
+  const [REVIEWS, setReviews] = useState<any[]>([]);
+  useEffect(() => { return subscribeToReviews(setReviews); }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -397,9 +695,9 @@ function ReviewsTab() {
       </div>
       <div className="admin-stats-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
         {[
-          { label: 'Total Reviews', value: '600+' },
-          { label: 'Average Rating', value: '4.7 ★' },
-          { label: 'Responded', value: '432' },
+          { label: 'Total Reviews', value: REVIEWS.length > 0 ? `${REVIEWS.length}` : '0' },
+          { label: 'Average Rating', value: REVIEWS.length > 0 ? `${(REVIEWS.reduce((s: number, r: any) => s + (r.rating || 0), 0) / REVIEWS.length).toFixed(1)} ★` : 'N/A' },
+          { label: 'Reviews This Month', value: REVIEWS.length > 0 ? `${REVIEWS.length}` : '0' },
         ].map(s => (
           <div key={s.label} className="admin-stat-card">
             <div className="admin-stat-label">{s.label}</div>
@@ -471,6 +769,15 @@ function SettingsTab() {
 }
 
 function InventoryTab() {
+  const [productsList, setProductsList] = useState<any[]>([]);
+  const [stockHistory, setStockHistory] = useState<any[]>([]);
+  
+  useEffect(() => { 
+    const unsubR = subscribeToAllProducts(setProductsList);
+    const unsubS = subscribeToStockHistory(setStockHistory);
+    return () => { unsubR(); unsubS(); };
+  }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -481,18 +788,18 @@ function InventoryTab() {
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-label">Low Stock Items</div>
-          <div className="admin-stat-number" style={{ color: '#f59e0b' }}>3</div>
+          <div className="admin-stat-number" style={{ color: '#f59e0b' }}>{productsList.filter(p => p.stock > 0 && p.stock < 20).length}</div>
           <div className="admin-stat-change orange"><AlertCircle size={13} /> Threshold: 20 units</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Out of Stock</div>
-          <div className="admin-stat-number" style={{ color: '#ef4444' }}>1</div>
-          <div className="admin-stat-change down">Formal Bottom – Black</div>
+          <div className="admin-stat-number" style={{ color: '#ef4444' }}>{productsList.filter(p => p.stock === 0).length}</div>
+          <div className="admin-stat-change down">{productsList.filter(p => p.stock === 0).map(p => p.name).slice(0, 1).join('') || 'None'}</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Total SKUs</div>
-          <div className="admin-stat-number">124</div>
-          <div className="admin-stat-change up"><Plus size={13} /> 2 added this week</div>
+          <div className="admin-stat-number">{productsList.length}</div>
+          <div className="admin-stat-change up"><Package size={13} /> In catalog</div>
         </div>
       </div>
 
@@ -508,7 +815,7 @@ function InventoryTab() {
                 <tr><th>Product</th><th>Current</th><th>Add Qty</th></tr>
               </thead>
               <tbody>
-                {PRODUCTS_LIST.slice(0, 5).map(p => (
+                {productsList.slice(0, 5).map(p => (
                   <tr key={p.id}>
                     <td>{p.name}</td>
                     <td className="admin-fw-700">{p.stock}</td>
@@ -526,7 +833,7 @@ function InventoryTab() {
             <button className="admin-card-action"><History size={13} /> View Full</button>
           </div>
           <div style={{ padding: '0.5rem 1rem' }}>
-            {STOCK_HISTORY.map((h, i) => (
+            {stockHistory.map((h, i) => (
               <div key={i} className="admin-product-row" style={{ borderBottom: '1px solid #eee' }}>
                 <div className="admin-product-info">
                   <div className="admin-fw-600">{h.product}</div>
@@ -548,6 +855,10 @@ function InventoryTab() {
 }
 
 function WhatsAppMgmtTab() {
+
+  const [whatsappEnquiries, setWhatsapp] = useState<any[]>([]);
+  useEffect(() => { return subscribeToWhatsAppEnquiries(setWhatsapp); }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -572,7 +883,7 @@ function WhatsAppMgmtTab() {
               </tr>
             </thead>
             <tbody>
-              {WHATSAPP_ENQUIRIES.map(w => (
+              {whatsappEnquiries.map(w => (
                 <tr key={w.id}>
                   <td>
                     <div className="admin-fw-600">{w.name}</div>
@@ -625,6 +936,10 @@ function WhatsAppMgmtTab() {
 }
 
 function GroupOrdersTab() {
+
+  const [GROUP_ORDERS, setGroupOrders] = useState<any[]>([]);
+  useEffect(() => { return subscribeToGroupOrders(setGroupOrders); }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -635,17 +950,17 @@ function GroupOrdersTab() {
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-label">Bulk Revenue</div>
-          <div className="admin-stat-number" style={{ color: '#7c3aed' }}>₹2,47,000</div>
-          <div className="admin-stat-change up"><TrendingUp size={13} /> Last 30 days</div>
+          <div className="admin-stat-number" style={{ color: '#7c3aed' }}>{GROUP_ORDERS.length > 0 ? GROUP_ORDERS.map(g => parseInt(g.revenue.replace(/[^0-9]/g, '') || '0')).reduce((a: number, b: number) => a + b, 0).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }) : '₹0'}</div>
+          <div className="admin-stat-change up"><TrendingUp size={13} /> All time</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Active Groups</div>
-          <div className="admin-stat-number">12</div>
-          <div className="admin-stat-change up">In production</div>
+          <div className="admin-stat-number">{GROUP_ORDERS.length}</div>
+          <div className="admin-stat-change up">{GROUP_ORDERS.filter(g => g.status === 'in_progress' || g.status === 'pending').length} in production</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Total Pieces</div>
-          <div className="admin-stat-number">840</div>
+          <div className="admin-stat-number">{GROUP_ORDERS.reduce((sum: number, g: any) => sum + (g.count || 0), 0)}</div>
           <div className="admin-stat-change purple">Ordered pieces</div>
         </div>
       </div>
@@ -700,6 +1015,15 @@ function GroupOrdersTab() {
 }
 
 function CouponsTab() {
+
+  const [COUPONS, setCoupons] = useState<any[]>([]);
+  const [FESTIVALS, setFestivals] = useState<any[]>([]);
+  useEffect(() => {
+    const uC = subscribeToCoupons(setCoupons);
+    const uF = subscribeToFestivals(setFestivals);
+    return () => { uC(); uF(); };
+  }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -742,6 +1066,8 @@ function CouponsTab() {
 }
 
 function CalendarTab() {
+  const [FESTIVALS, setFestivals] = useState<any[]>([]);
+  useEffect(() => { const unsub = subscribeToFestivals(setFestivals); return () => unsub(); }, []);
   return (
     <>
       <div className="admin-page-header">
@@ -769,6 +1095,10 @@ function CalendarTab() {
 }
 
 function StaffTab() {
+
+  const [STAFF, setStaff] = useState<any[]>([]);
+  useEffect(() => { return subscribeToStaff(setStaff); }, []);
+
   return (
     <>
       <div className="admin-page-header">
@@ -817,9 +1147,9 @@ function ReportsTab() {
       </div>
       <div className="admin-grid-3">
         {[
-          { t: 'Monthly Sales', d: 'Full revenue breakdown for March 2026', i: FileText },
-          { t: 'Inventory Report', d: 'Stock levels of all 124 SKUs', i: Database },
-          { t: 'Customer List', d: 'Contact details of 3,841 customers', i: Users },
+          { t: 'Monthly Sales', d: 'Revenue breakdown and order analytics', i: FileText },
+          { t: 'Inventory Report', d: 'Stock levels for all products', i: Database },
+          { t: 'Customer List', d: 'Contact details of all registered customers', i: Users },
         ].map(r => (
           <div key={r.t} className="admin-card" style={{ cursor: 'pointer' }}>
             <div style={{ padding: '1.5rem', textAlign: 'center' }}>

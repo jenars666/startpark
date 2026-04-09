@@ -9,16 +9,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { vesthiTypeProducts } from './vesthi-type-products';
-import { useCart } from '../../../context/CartContext';
-import { useWishlist } from '../../../context/WishlistContext';
+import { useGuestGuard } from '../../../hooks/useGuestGuard';
+import { useCart } from '../../../context/CartContextFirebase';
+import { useWishlist } from '../../../context/WishlistContextFirebase';
 import './vesthi-type.css';
 
 export default function VesthiTypePage() {
   const params = useParams();
   const type = (params.type as string)?.toLowerCase() || 'tissue';
   const products = vesthiTypeProducts[type as keyof typeof vesthiTypeProducts] || vesthiTypeProducts.tissue;
+  const { guardAddToCart, guardWishlist } = useGuestGuard();
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   const getHeroData = () => {
     switch (type) {
@@ -131,10 +133,12 @@ export default function VesthiTypePage() {
                         <button 
                           className="v-action-btn" 
                           title="Add to Cart"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 };
+                            if (!guardAddToCart(item)) return;
+                            await addToCart(item);
                           }}
                         >
                           <ShoppingCart size={18} />
@@ -142,14 +146,12 @@ export default function VesthiTypePage() {
                         <button 
                           className="v-action-btn" 
                           title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (isInWishlist(product.id)) {
-                              removeFromWishlist(product.id);
-                            } else {
-                              addToWishlist({ id: product.id, name: product.name, price: product.price, img: product.img });
-                            }
+                            const item = { id: product.id, name: product.name, price: product.price, img: product.img };
+                            if (isInWishlist(product.id)) { await removeFromWishlist(product.id); }
+                            else { if (!guardWishlist(item)) return; await addToWishlist(item); }
                           }}
                         >
                           <Heart size={18} fill={isInWishlist(product.id) ? "currentColor" : "none"} />
