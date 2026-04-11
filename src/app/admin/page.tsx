@@ -331,13 +331,22 @@ function ProductsTab() {
           <h1 className="admin-page-title">Products</h1>
           <p className="admin-page-subtitle">Manage your product catalogue</p>
         </div>
-        <button 
-          onClick={() => window.location.href = '/admin/products/add'}
-          className="admin-quick-btn blue" 
-          style={{ width: 'auto', padding: '0.6rem 1.25rem' }}
-        >
-          <Plus size={16} /> Add Product
-        </button>
+        <div className="admin-flex-gap-2">
+          <button
+            onClick={() => window.location.href = '/admin/products/local-upload'}
+            className="admin-quick-btn"
+            style={{ width: 'auto', padding: '0.6rem 1.25rem' }}
+          >
+            <Plus size={16} /> Local Upload
+          </button>
+          <button 
+            onClick={() => window.location.href = '/admin/products/add'}
+            className="admin-quick-btn blue" 
+            style={{ width: 'auto', padding: '0.6rem 1.25rem' }}
+          >
+            <Plus size={16} /> Firebase Add
+          </button>
+        </div>
       </div>
       <div className="admin-card">
         <div className="admin-card-header">

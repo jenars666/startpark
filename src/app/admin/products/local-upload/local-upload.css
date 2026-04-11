@@ -1,0 +1,7 @@
+.local-upload-alert-card {
+  margin-bottom: 1rem;
+}
+
+.local-upload-full-width {
+  grid-column: 1 / -1;
+}

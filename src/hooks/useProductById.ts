@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../types/product';
+import { fetchProductByIdFromApi, isProductsApiEnabled } from '../lib/productsApi';
 
 function mapToProduct(id: string, data: Record<string, unknown>): Product {
   const rawSizes = Array.isArray(data.sizes) ? data.sizes : [];
@@ -35,6 +36,7 @@ export function useProductById(productId: string | null) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(Boolean(productId));
   const [error, setError] = useState<unknown>(null);
+  const apiMode = isProductsApiEnabled();
 
   useEffect(() => {
     if (!productId) {
@@ -42,6 +44,37 @@ export function useProductById(productId: string | null) {
       setLoading(false);
       setError(null);
       return;
+    }
+
+    if (apiMode) {
+      let active = true;
+
+      const loadProduct = async () => {
+        try {
+          setError(null);
+          const data = (await fetchProductByIdFromApi(productId)) as Record<string, unknown>;
+          if (!active) return;
+
+          const id = String(data._id || data.id || productId);
+          setProduct(mapToProduct(id, data));
+        } catch (apiError) {
+          if (!active) return;
+          setProduct(null);
+          setError(apiError);
+        } finally {
+          if (active) {
+            setLoading(false);
+          }
+        }
+      };
+
+      void loadProduct();
+      const intervalId = setInterval(loadProduct, 15000);
+
+      return () => {
+        active = false;
+        clearInterval(intervalId);
+      };
     }
 
     if (!db) {
@@ -77,7 +110,7 @@ export function useProductById(productId: string | null) {
     return () => {
       unsubscribe();
     };
-  }, [productId]);
+  }, [apiMode, productId]);
 
   return { product, loading, error };
 }

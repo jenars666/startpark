@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../types/product';
+import { fetchProductsFromApi, isProductsApiEnabled } from '../lib/productsApi';
 
 function normalizeCategory(value?: string) {
   const raw = (value || '').trim().toLowerCase();
@@ -18,8 +19,64 @@ function normalizeCategory(value?: string) {
 export function useProducts(categoryFilter?: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const apiMode = isProductsApiEnabled();
 
   useEffect(() => {
+    if (apiMode) {
+      let active = true;
+
+      const loadProducts = async () => {
+        try {
+          const fetchedProducts = await fetchProductsFromApi({
+            category: categoryFilter,
+            status: 'active',
+          });
+
+          if (!active) {
+            return;
+          }
+
+          const mappedProducts: Product[] = fetchedProducts.map((item: Record<string, unknown>) => {
+            const normalizedCategory = normalizeCategory(String(item.category || ''));
+            const imageUrl = String(item.imageUrl || item.img || item.image || '');
+
+            return {
+              id: String(item._id || item.id || ''),
+              name: String(item.name || ''),
+              price: item.price != null ? String(item.price) : '0',
+              oldPrice: item.oldPrice != null ? String(item.oldPrice) : '',
+              img: imageUrl,
+              tag: String(item.tag || ''),
+              color: String(item.color || ''),
+              category: normalizedCategory,
+              stock: typeof item.stock === 'number' ? item.stock : 0,
+              rating: typeof item.rating === 'number' ? item.rating : undefined,
+              reviews: typeof item.reviews === 'number' ? item.reviews : undefined,
+              showStockNote: Boolean(item.showStockNote),
+              sizes: Array.isArray(item.sizes) ? (item.sizes as string[]) : [],
+              discount: typeof item.discount === 'number' ? item.discount : undefined,
+            } as Product;
+          });
+
+          setProducts(mappedProducts);
+        } catch (error) {
+          console.error('Error fetching products from API:', error);
+        } finally {
+          if (active) {
+            setLoading(false);
+          }
+        }
+      };
+
+      void loadProducts();
+      const intervalId = setInterval(loadProducts, 15000);
+
+      return () => {
+        active = false;
+        clearInterval(intervalId);
+      };
+    }
+
     if (!db) {
       setLoading(false);
       return;
@@ -68,7 +125,7 @@ export function useProducts(categoryFilter?: string) {
     });
 
     return () => unsubscribe();
-  }, [categoryFilter]);
+  }, [apiMode, categoryFilter]);
 
   return { products, loading };
 }
