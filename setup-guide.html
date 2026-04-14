@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Mens Park - Setup Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        .step { background: white; border: 3px solid #000; padding: 20px; margin-bottom: 20px; }
+        .step-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .step-number { font-size: 2em; margin-right: 15px; }
+        .step-title { font-size: 1.5em; font-weight: bold; }
+        .step-url { background: #e3f2fd; padding: 10px; margin-bottom: 15px; border-left: 4px solid #2196F3; }
+        .step-url a { color: #1976D2; text-decoration: none; font-weight: bold; }
+        .task { padding: 8px 0; padding-left: 25px; position: relative; }
+        .task:before { content: '☐'; position: absolute; left: 0; font-size: 1.2em; }
+        .task.done:before { content: '✅'; }
+        .command { background: #263238; color: #aed581; padding: 10px; margin: 5px 0; font-family: 'Courier New', monospace; border-radius: 4px; }
+        .info-box { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; margin: 20px 0; }
+        .success-box { background: #d4edda; border: 2px solid #28a745; padding: 15px; margin: 20px 0; }
+        .credential-box { background: #f8f9fa; border: 2px solid #6c757d; padding: 15px; margin: 10px 0; }
+        .credential-box input { width: 100%; padding: 8px; margin-top: 5px; border: 2px solid #000; font-family: monospace; }
+        button { background: #000; color: #fff; border: none; padding: 10px 20px; cursor: pointer; font-size: 1em; margin: 5px; }
+        button:hover { background: #333; }
+        .progress { background: #e0e0e0; height: 30px; border: 2px solid #000; margin: 20px 0; }
+        .progress-bar { background: #4CAF50; height: 100%; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Star Mens Park - MongoDB Backend Setup</h1>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progress">0% Complete</div>
+        </div>
+
+        <div class="info-box">
+            <strong>⏱️ Estimated Time:</strong> 15-20 minutes<br>
+            <strong>💰 Cost:</strong> $0 (all free tiers)<br>
+            <strong>📋 What You'll Need:</strong> Email address, phone number (for verification)
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1️⃣</div>
+                <div class="step-title">MongoDB Atlas Setup</div>
+            </div>
+            <div class="step-url">
+                🔗 <a href="https://cloud.mongodb.com" target="_blank">https://cloud.mongodb.com</a>
+            </div>
+            <div class="task" onclick="toggleTask(this)">Create free account</div>
+            <div class="task" onclick="toggleTask(this)">Create M0 FREE cluster (AWS, closest region)</div>
+            <div class="task" onclick="toggleTask(this)">Create database user (username: starmenspark)</div>
+            <div class="task" onclick="toggleTask(this)">Whitelist IP: 0.0.0.0/0</div>
+            <div class="task" onclick="toggleTask(this)">Get connection string</div>
+            
+            <div class="credential-box">
+                <strong>Save your MongoDB URI:</strong>
+                <input type="text" id="mongoUri" placeholder="mongodb+srv://starmenspark:PASSWORD@cluster.mongodb.net/starmenspark">
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2️⃣</div>
+                <div class="step-title">Cloudflare R2 Setup</div>
+            </div>
+            <div class="step-url">
+                🔗 <a href="https://dash.cloudflare.com" target="_blank">https://dash.cloudflare.com</a>
+            </div>
+            <div class="task" onclick="toggleTask(this)">Create Cloudflare account</div>
+            <div class="task" onclick="toggleTask(this)">Enable R2 (free tier)</div>
+            <div class="task" onclick="toggleTask(this)">Create bucket: starmenspark-products</div>
+            <div class="task" onclick="toggleTask(this)">Create API token (Read & Write)</div>
+            <div class="task" onclick="toggleTask(this)">Save credentials</div>
+            
+            <div class="credential-box">
+                <strong>Account ID:</strong>
+                <input type="text" id="r2AccountId" placeholder="your-account-id">
+                <strong>Access Key ID:</strong>
+                <input type="text" id="r2AccessKey" placeholder="your-access-key">
+                <strong>Secret Access Key:</strong>
+                <input type="password" id="r2SecretKey" placeholder="your-secret-key">
+                <strong>Public URL:</strong>
+                <input type="text" id="r2PublicUrl" placeholder="https://pub-xxxxx.r2.dev">
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3️⃣</div>
+                <div class="step-title">Google OAuth Setup</div>
+            </div>
+            <div class="step-url">
+                🔗 <a href="https://console.cloud.google.com" target="_blank">https://console.cloud.google.com</a>
+            </div>
+            <div class="task" onclick="toggleTask(this)">Create project: Star Mens Park</div>
+            <div class="task" onclick="toggleTask(this)">Enable Google+ API</div>
+            <div class="task" onclick="toggleTask(this)">Configure OAuth consent screen</div>
+            <div class="task" onclick="toggleTask(this)">Create OAuth credentials</div>
+            <div class="task" onclick="toggleTask(this)">Add origin: http://localhost:3000</div>
+            
+            <div class="credential-box">
+                <strong>Client ID:</strong>
+                <input type="text" id="googleClientId" placeholder="xxxxx-yyyyy.apps.googleusercontent.com">
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4️⃣</div>
+                <div class="step-title">Configure Environment Variables</div>
+            </div>
+            <button onclick="generateEnvFile()">📝 Generate backend/.env File</button>
+            <button onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            
+            <div class="command" id="envContent" style="white-space: pre-wrap; margin-top: 10px;">
+PORT=5001
+CORS_ORIGINS=http://localhost:3000
+MONGODB_URI=<span style="color: #ff6b6b;">← Fill from Step 1</span>
+JWT_SECRET=c2550daa6fee0d382e0c71c952dd12bc36354e453445ec925b29428c4646ca5b
+GOOGLE_CLIENT_ID=<span style="color: #ff6b6b;">← Fill from Step 3</span>
+R2_ACCOUNT_ID=<span style="color: #ff6b6b;">← Fill from Step 2</span>
+R2_BUCKET=starmenspark-products
+R2_ACCESS_KEY_ID=<span style="color: #ff6b6b;">← Fill from Step 2</span>
+R2_SECRET_ACCESS_KEY=<span style="color: #ff6b6b;">← Fill from Step 2</span>
+R2_PUBLIC_BASE_URL=<span style="color: #ff6b6b;">← Fill from Step 2</span>
+R2_SIGNED_URL_EXPIRES_SECONDS=300
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">5️⃣</div>
+                <div class="step-title">Test Backend</div>
+            </div>
+            <div class="command">cd backend</div>
+            <div class="command">npm install</div>
+            <div class="command">npm start</div>
+            <div style="margin: 10px 0;">In new terminal:</div>
+            <div class="command">curl http://localhost:5001/health</div>
+            <div class="command">curl http://localhost:5001/api/products</div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">6️⃣</div>
+                <div class="step-title">Make First User Admin</div>
+            </div>
+            <div class="task" onclick="toggleTask(this)">Start frontend: npm run dev</div>
+            <div class="task" onclick="toggleTask(this)">Go to http://localhost:3000</div>
+            <div class="task" onclick="toggleTask(this)">Login with Google</div>
+            <div class="task" onclick="toggleTask(this)">MongoDB Atlas → Browse Collections → users</div>
+            <div class="task" onclick="toggleTask(this)">Find your user, change role to "admin"</div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">7️⃣</div>
+                <div class="step-title">Test Product Creation</div>
+            </div>
+            <div class="task" onclick="toggleTask(this)">Go to http://localhost:3000/admin/dashboard</div>
+            <div class="task" onclick="toggleTask(this)">Click "Add Product"</div>
+            <div class="task" onclick="toggleTask(this)">Fill form and upload image</div>
+            <div class="task" onclick="toggleTask(this)">Create product</div>
+            <div class="task" onclick="toggleTask(this)">See real-time updates! 🎉</div>
+        </div>
+
+        <div class="success-box">
+            <strong>🎉 Setup Complete!</strong><br>
+            Your MongoDB backend is now running with real-time updates via Socket.io!
+        </div>
+    </div>
+
+    <script>
+        function toggleTask(element) {
+            element.classList.toggle('done');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const tasks = document.querySelectorAll('.task');
+            const doneTasks = document.querySelectorAll('.task.done');
+            const progress = (doneTasks.length / tasks.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = Math.round(progress) + '% Complete';
+        }
+
+        function generateEnvFile() {
+            const mongoUri = document.getElementById('mongoUri').value;
+            const googleClientId = document.getElementById('googleClientId').value;
+            const r2AccountId = document.getElementById('r2AccountId').value;
+            const r2AccessKey = document.getElementById('r2AccessKey').value;
+            const r2SecretKey = document.getElementById('r2SecretKey').value;
+            const r2PublicUrl = document.getElementById('r2PublicUrl').value;
+
+            const envContent = `PORT=5001
+CORS_ORIGINS=http://localhost:3000
+MONGODB_URI=${mongoUri || 'YOUR_MONGODB_URI'}
+JWT_SECRET=c2550daa6fee0d382e0c71c952dd12bc36354e453445ec925b29428c4646ca5b
+GOOGLE_CLIENT_ID=${googleClientId || 'YOUR_GOOGLE_CLIENT_ID'}
+R2_ACCOUNT_ID=${r2AccountId || 'YOUR_R2_ACCOUNT_ID'}
+R2_BUCKET=starmenspark-products
+R2_ACCESS_KEY_ID=${r2AccessKey || 'YOUR_R2_ACCESS_KEY'}
+R2_SECRET_ACCESS_KEY=${r2SecretKey || 'YOUR_R2_SECRET_KEY'}
+R2_PUBLIC_BASE_URL=${r2PublicUrl || 'YOUR_R2_PUBLIC_URL'}
+R2_SIGNED_URL_EXPIRES_SECONDS=300`;
+
+            document.getElementById('envContent').textContent = envContent;
+            alert('✅ .env file generated! Copy this to backend/.env');
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('envContent').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Copied to clipboard! Paste into backend/.env');
+            });
+        }
+    </script>
+</body>
+</html>

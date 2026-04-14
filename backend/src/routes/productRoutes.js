@@ -1,7 +1,8 @@
 import express from 'express';
 import { z } from 'zod';
 import { Product } from '../models/Product.js';
-import { requireAdminSecret } from '../middleware/adminSecret.js';
+import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { emitProductUpdate } from '../config/socket.js';
 
 const router = express.Router();
 
@@ -88,16 +89,61 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', requireAdminSecret, async (req, res, next) => {
+router.post('/', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const payload = createProductSchema.parse(req.body);
-
     const product = await Product.create(payload);
+    
+    emitProductUpdate('product:created', product);
 
     return res.status(201).json({
       ok: true,
       message: 'Product created successfully.',
       data: product,
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.put('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const payload = createProductSchema.partial().parse(req.body);
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      payload,
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ ok: false, message: 'Product not found' });
+    }
+
+    emitProductUpdate('product:updated', product);
+
+    return res.json({
+      ok: true,
+      message: 'Product updated successfully.',
+      data: product,
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ ok: false, message: 'Product not found' });
+    }
+
+    emitProductUpdate('product:deleted', { id: product._id });
+
+    return res.json({
+      ok: true,
+      message: 'Product deleted successfully.',
     });
   } catch (error) {
     return next(error);

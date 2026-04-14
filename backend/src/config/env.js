@@ -21,6 +21,8 @@ export const env = {
   mongoUri: process.env.MONGODB_URI || '',
   adminPanelSecret: process.env.ADMIN_PANEL_SECRET || '',
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGINS),
+  jwtSecret: process.env.JWT_SECRET || '',
+  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
   r2: {
     accountId: process.env.R2_ACCOUNT_ID || '',
     bucket: process.env.R2_BUCKET || '',
@@ -38,7 +40,8 @@ export function assertEnv() {
   const missing = [];
 
   if (!env.mongoUri) missing.push('MONGODB_URI');
-  if (!env.adminPanelSecret) missing.push('ADMIN_PANEL_SECRET');
+  if (!env.jwtSecret) missing.push('JWT_SECRET');
+  if (!env.googleClientId) missing.push('GOOGLE_CLIENT_ID');
   if (!env.r2.accountId) missing.push('R2_ACCOUNT_ID');
   if (!env.r2.bucket) missing.push('R2_BUCKET');
   if (!env.r2.accessKeyId) missing.push('R2_ACCESS_KEY_ID');
